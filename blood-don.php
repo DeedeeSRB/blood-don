@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package BloodDonPlugin
  */
@@ -29,55 +28,55 @@ if ( ! defined( 'ABSPATH' ) ) {
     die;
 }
 
-class BloodDonPlugin
-{
-    static $PLUGIN_NAME;
-
-    function __construct() {
-        $this->PLUGIN_NAME = plugin_basename( __FILE__ );
-    }
-
-    function activate() {
-        flush_rewrite_rules();
-    }
-
-    function deactivate() {
-        flush_rewrite_rules();
-    }
-
-    function register_admin() {
-        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
-
-        add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
-
-        add_filter( "plugin_action_links_$this->PLUGIN_NAME", array( $this, 'settings_link' ) );
-    }
- 
-    function settings_link( $links ) {
-        $settings_link = '<a href="admin.php?page=blood_donation_plugin">Settings</a>';
-        array_push( $links, $settings_link);
-        return $links;
-    }
-
-    function add_admin_page() {
-        add_menu_page( 'Blood Donation Plugin', 'Blood Donations', 'manage_options', 'blood_donation_plugin',
-         array( $this, 'admin_index'), 'dashicons-heart', 110 );
-    }
-
-    function admin_index() {
-        require_once plugin_dir_path( __FILE__ ) . 'templates/admin.php';
-    }
-
-    function enqueue(){
-        wp_enqueue_style( 'mypluginstyle', plugins_url( '/assets/mystyle.css', __FILE__ ) );
-        wp_enqueue_script( 'mypluginscript', plugins_url( '/assets/myscript.js', __FILE__ ) );
-    }
+if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+	require_once dirname( __FILE__ ) . '/vendor/autoload.php';
 }
 
-if ( class_exists( 'BloodDonPlugin' ) ) {
+use Inc\Activate;
+use Inc\Deactivate;
+
+if ( !class_exists( 'BloodDonPlugin' ) ) {
+    class BloodDonPlugin
+    {
+        static $PLUGIN_NAME;
+    
+        function __construct() {
+            $this->PLUGIN_NAME = plugin_basename( __FILE__ );
+        }
+    
+        function register_admin() {
+            add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+    
+            add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
+    
+            add_filter( "plugin_action_links_$this->PLUGIN_NAME", array( $this, 'settings_link' ) );
+        }
+     
+        function settings_link( $links ) {
+            $settings_link = '<a href="admin.php?page=blood_donation_plugin">Settings</a>';
+            array_push( $links, $settings_link);
+            return $links;
+        }
+    
+        function add_admin_page() {
+            add_menu_page( 'Blood Donation Plugin', 'Blood Donations', 'manage_options', 'blood_donation_plugin',
+             array( $this, 'admin_index'), 'dashicons-heart', 110 );
+        }
+    
+        function admin_index() {
+            require_once plugin_dir_path( __FILE__ ) . 'templates/admin.php';
+        }
+    
+        function enqueue(){
+            wp_enqueue_style( 'mypluginstyle', plugins_url( '/assets/mystyle.css', __FILE__ ) );
+            wp_enqueue_script( 'mypluginscript', plugins_url( '/assets/myscript.js', __FILE__ ) );
+        }
+    }
+    
     $bloodDonPlugin = new BloodDonPlugin();
     $bloodDonPlugin->register_admin();
+    
+    register_activation_hook( __FILE__, array( 'Inc\Activate', 'activate' ) );
+    
+    register_deactivation_hook( __FILE__, array( 'Inc\Deactivate', 'deactivate' ) );
 }
-
-register_activation_hook( __FILE__, array( $bloodDonPlugin, 'activate' ) );
-register_deactivation_hook( __FILE__, array( $bloodDonPlugin, 'deactivate' ) );

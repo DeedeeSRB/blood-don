@@ -1,0 +1,17 @@
+{
+    "name": "sadik/blood-don",
+    "description": "First implimentation",
+    "type": "project",
+    "license": "GLP",
+    "authors": [
+        {
+            "name": "Sadik Besata",
+            "email": "sadik.besata@agu.edu.tr"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {"Inc\\": "./inc"}
+    }
+}
