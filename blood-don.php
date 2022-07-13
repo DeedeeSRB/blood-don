@@ -35,6 +35,14 @@ class BloodDonPlugin
         add_action( 'init', array( $this, 'custom_post_type' ) );
     }
 
+    function register_admin_scripts(){
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+    }
+
+    function register_wp_scripts(){
+        add_action( 'wp_enqueue_scripts',array( $this, 'enqueue' ) );
+    }
+
     function activate(){
         $this->custom_post_type();
         flush_rewrite_rules();
@@ -47,10 +55,16 @@ class BloodDonPlugin
     function custom_post_type(){
         register_post_type( 'book', ['public' => true, 'label' => 'Books' ] );
     }
+
+    function enqueue(){
+        wp_enqueue_style( 'mypluginstyle', plugins_url( '/assets/mystyle.css', __FILE__ ) );
+        wp_enqueue_script( 'mypluginscript', plugins_url( '/assets/myscript.js', __FILE__ ) );
+    }
 }
 
 if ( class_exists( 'BloodDonPlugin' ) ) {
     $bloodDonPlugin = new BloodDonPlugin();
+    $bloodDonPlugin->register_admin_scripts();
 }
 
 register_activation_hook( __FILE__, array( $bloodDonPlugin, 'activate' ) );
