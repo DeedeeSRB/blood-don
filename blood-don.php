@@ -31,29 +31,41 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BloodDonPlugin
 {
-    function __construct(){
-        add_action( 'init', array( $this, 'custom_post_type' ) );
+    static $PLUGIN_NAME;
+
+    function __construct() {
+        $this->PLUGIN_NAME = plugin_basename( __FILE__ );
     }
 
-    function register_admin_scripts(){
+    function activate() {
+        flush_rewrite_rules();
+    }
+
+    function deactivate() {
+        flush_rewrite_rules();
+    }
+
+    function register_admin() {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+
+        add_action( 'admin_menu', array( $this, 'add_admin_page' ) );
+
+        add_filter( "plugin_action_links_$this->PLUGIN_NAME", array( $this, 'settings_link' ) );
+    }
+ 
+    function settings_link( $links ) {
+        $settings_link = '<a href="admin.php?page=blood_donation_plugin">Settings</a>';
+        array_push( $links, $settings_link);
+        return $links;
     }
 
-    function register_wp_scripts(){
-        add_action( 'wp_enqueue_scripts',array( $this, 'enqueue' ) );
+    function add_admin_page() {
+        add_menu_page( 'Blood Donation Plugin', 'Blood Donations', 'manage_options', 'blood_donation_plugin',
+         array( $this, 'admin_index'), 'dashicons-heart', 110 );
     }
 
-    function activate(){
-        $this->custom_post_type();
-        flush_rewrite_rules();
-    }
-
-    function deactivate(){
-        flush_rewrite_rules();
-    }
-
-    function custom_post_type(){
-        register_post_type( 'book', ['public' => true, 'label' => 'Books' ] );
+    function admin_index() {
+        require_once plugin_dir_path( __FILE__ ) . 'templates/admin.php';
     }
 
     function enqueue(){
@@ -64,7 +76,7 @@ class BloodDonPlugin
 
 if ( class_exists( 'BloodDonPlugin' ) ) {
     $bloodDonPlugin = new BloodDonPlugin();
-    $bloodDonPlugin->register_admin_scripts();
+    $bloodDonPlugin->register_admin();
 }
 
 register_activation_hook( __FILE__, array( $bloodDonPlugin, 'activate' ) );
