@@ -2,8 +2,8 @@ window.addEventListener("load", function() {
 
 	// store tabs variables
 	var tabs = document.querySelectorAll("ul.nav-tabs > li");
-
-	for (i = 0; i < tabs.length; i++) {
+	
+	for (let i = 0; i < tabs.length; i++) {
 		tabs[i].addEventListener("click", switchTab);
 	}
 

@@ -13,7 +13,7 @@ class Enqueue
 	
 	function enqueue() 
 	{
-		wp_enqueue_style( 'mypluginstyle', BD_PLUGIN_URL . 'assets/mystyles.css' );
-		wp_enqueue_script( 'mypluginscript', BD_PLUGIN_URL . 'assets/myscripts.js' );
+		wp_enqueue_style( 'mypluginstyle', BD_PLUGIN_URL . 'assets/mystyle.min.css' );
+		wp_enqueue_script( 'mypluginscript', BD_PLUGIN_URL . 'assets/myscript.min.js' );
 	}
 }
