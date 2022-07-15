@@ -11,40 +11,47 @@ class AdminCallbacks
 		return require_once BD_PLUGIN_PATH . 'templates/admin.php';
 	}
 
-	public static function adminCpt()
+	public static function bloodDonorFirstName()
 	{
-        return require_once BD_PLUGIN_PATH . 'templates/cpt.php';
+		echo '<input type="text" class="regular-text" name="first_name" placeholder="First Name">';
 	}
 
-	public static function adminTaxonomy()
+	public static function bloodDonorLastName()
 	{
-		return require_once BD_PLUGIN_PATH . 'templates/taxonomy.php';
+		echo '<input type="text" class="regular-text" name="last_name" placeholder="Last Name">';
 	}
 
-	public static function adminWidget()
+	public static function bloodDonorBloodGroup( $args )
 	{
-		return require_once BD_PLUGIN_PATH . 'templates/widget.php';
+		?>
+		<select id="<?php echo esc_attr( $args['label_for'] ); ?>"
+				name="<?php echo esc_attr( $args['label_for'] ); ?>">
+			<option value="" selected disabled>Select</option>
+			<option value="A+">A+</option>
+			<option value="A-">A-</option>
+			<option value="B+">B+</option>
+			<option value="B-">B-</option>
+			<option value="AB+">AB+</option>
+			<option value="AB-">AB-</option>
+			<option value="O+">O+</option>
+			<option value="O-">O-</option>
+		</select>
+		<?php
 	}
 
-	public static function bloodDonOptionsGroup( $input )
+	public static function bloodDonorPhoneNumber()
 	{
-		return $input;
+		echo '<input type="text" class="regular-text" name="phone_number" placeholder="0XXX-XXX-XXXX">';
 	}
 
-	public static function bloodDonAdminSection()
+	public static function bloodDonorEmail()
 	{
-		echo 'Check this beautiful section!';
+		echo '<input type="text" class="regular-text" name="email" placeholder="someone@something.com">';
 	}
 
-	public static function bloodDonTextExample()
+	public static function bloodDonorAddress()
 	{
-		$value = esc_attr( get_option( 'text_example' ) );
-		echo '<input type="text" class="regular-text" name="text_example" value="' . $value . '" placeholder="Write Something Here!">';
+		echo '<textarea class="regular-text" name="address" placeholder="Over there at that street"></textarea>';
 	}
-
-	public static function bloodDonFirstName()
-	{
-		$value = esc_attr( get_option( 'first_name' ) );
-		echo '<input type="text" class="regular-text" name="first_name" value="' . $value . '" placeholder="Write your First Name">';
-	}
+	
 }

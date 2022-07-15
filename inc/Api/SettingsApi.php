@@ -27,7 +27,6 @@ class SettingsApi
 	public function addPages( array $pages )
 	{
 		$this->admin_pages = $pages;
-
 		return $this;
 	}
 
@@ -65,47 +64,85 @@ class SettingsApi
 	public function addAdminMenu()
 	{
 		foreach ( $this->admin_pages as $page ) {
-			add_menu_page( $page['page_title'], $page['menu_title'], $page['capability'], $page['menu_slug'], $page['callback'], $page['icon_url'], $page['position'] );
+			$hookname = add_menu_page( 
+				$page['page_title'], 
+				$page['menu_title'], 
+				$page['capability'], 
+				$page['menu_slug'], 
+				$page['callback'], 
+				$page['icon_url'], 
+				$page['position'] 
+			);
+			
+			if ($page['page_title'] == 'Blood Donation Plugin'){
+				add_action( 'load-' . $hookname, array( $this, 'pageSubmit') );
+			}
 		}
 
         foreach ( $this->admin_subpages as $page ) {
-			add_submenu_page( $page['parent_slug'], $page['page_title'], $page['menu_title'], $page['capability'], $page['menu_slug'], $page['callback'] );
+			add_submenu_page( 
+				$page['parent_slug'], 
+				$page['page_title'], 
+				$page['menu_title'], 
+				$page['capability'], 
+				$page['menu_slug'], 
+				$page['callback'] 
+			);
 		}
+	}
+
+	public function pageSubmit($val) {
+		//var_dump($val);
+		var_dump($_POST);
+		var_dump($_SERVER['REQUEST_METHOD']);
 	}
 
     public function setSettings( array $settings )
 	{
 		$this->settings = $settings;
-
 		return $this;
 	}
 
 	public function setSections( array $sections )
 	{
 		$this->sections = $sections;
-
 		return $this;
 	}
 
 	public function setFields( array $fields )
 	{
 		$this->fields = $fields;
-
 		return $this;
 	}
 
 	public function registerCustomFields()
 	{
 		foreach ( $this->settings as $setting ) {
-			register_setting( $setting["option_group"], $setting["option_name"], ( isset( $setting["callback"] ) ? $setting["callback"] : '' ) );
+			register_setting( 
+				$setting["option_group"], 
+				$setting["option_name"], 
+				( isset( $setting["callback"] ) ? $setting["callback"] : '' ) 
+			);
 		}
 
 		foreach ( $this->sections as $section ) {
-			add_settings_section( $section["id"], $section["title"], ( isset( $section["callback"] ) ? $section["callback"] : '' ), $section["page"] );
+			add_settings_section( 
+				$section["id"], 
+				( isset( $section["title"] ) ? $section["title"] : '' ), 
+				( isset( $section["callback"] ) ? $section["callback"] : '' ), 
+				$section["page"] 
+			);
 		}
 
 		foreach ( $this->fields as $field ) {
-			add_settings_field( $field["id"], $field["title"], ( isset( $field["callback"] ) ? $field["callback"] : '' ), $field["page"], $field["section"], ( isset( $field["args"] ) ? $field["args"] : '' ) );
+			add_settings_field( 
+				$field["id"], 
+				$field["title"], 
+				( isset( $field["callback"] ) ? $field["callback"] : '' ), 
+				$field["page"], 
+				$field["section"], 
+				( isset( $field["args"] ) ? $field["args"] : '' ) 
+			);
 		}
 	}
 }

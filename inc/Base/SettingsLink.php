@@ -15,6 +15,7 @@ class SettingsLink
 	{
         $settings_link = '<a href="admin.php?page=blood_donation_plugin">Settings</a>';
         array_push( $links, $settings_link);
+        echo 'test';
         return $links;
     }
 }
