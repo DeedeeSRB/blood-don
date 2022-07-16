@@ -91,12 +91,6 @@ class SettingsApi
 		}
 	}
 
-	public function pageSubmit($val) {
-		//var_dump($val);
-		var_dump($_POST);
-		var_dump($_SERVER['REQUEST_METHOD']);
-	}
-
     public function setSettings( array $settings )
 	{
 		$this->settings = $settings;
@@ -144,5 +138,11 @@ class SettingsApi
 				( isset( $field["args"] ) ? $field["args"] : '' ) 
 			);
 		}
+	}
+
+	public function pageSubmit($val) {
+		//var_dump($val);
+		var_dump($_POST);
+		var_dump($_SERVER['REQUEST_METHOD']);
 	}
 }

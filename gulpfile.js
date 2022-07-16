@@ -24,7 +24,7 @@ var gulpif       = require( 'gulp-if' );
 var browserSync  = require( 'browser-sync' ).create();
 
 // Project related variables
-var styleSRC     = 'src/scss/mystyle.scss';
+var styleSRC     = 'src/scss/mystyles.scss';
 var styleURL     = './assets/';
 var mapURL       = './';
 
