@@ -16,6 +16,7 @@ final class Init
 			Pages\Admin::class,
 			Base\Enqueue::class,
             Base\SettingsLink::class,
+			Base\CustomShortcode::class,
 		];
 	}
 
