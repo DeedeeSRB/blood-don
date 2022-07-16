@@ -128,6 +128,7 @@ class Admin
 		$args = array(
 			array(
 				'id' => 'blood_donors_section',
+				'callback' => array( 'Inc\Api\AdminCallbacks', 'bloodDonorSection' ),
 				'page' => 'blood_donation_plugin'
 			),
 			array(
