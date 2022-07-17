@@ -1,4 +1,4 @@
-<ul class="responsive-table">
+<ul class="responsive-table" id="donors-table">
     <li class="table-header">
         <div class="col col-1">Id</div>
         <div class="col col-2">First Name</div>

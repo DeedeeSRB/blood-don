@@ -25,6 +25,7 @@ function submit_contact_form_callback(data)
 {
 	var jdata = JSON.parse(data);
 
+	var success = jdata.success;
 	var mess = jdata.message;
 	var color = jdata.color;
 
@@ -32,6 +33,10 @@ function submit_contact_form_callback(data)
 	$("#response_div").css("background-color", color);
 	$("#response_div").css("color","#FFFFFF");
 	$("#response_div").css("padding","20px");
+
+	if ( success == 1 && $("#donors-table").length ) {
+		location.reload();
+	}
 	
 
 }
