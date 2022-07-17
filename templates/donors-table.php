@@ -15,6 +15,13 @@
         $query = "SELECT * FROM $tablename_donors";
 
         $result = $wpdb->get_results( $query );
+        if ( count($result) == 0 ) {
+            ?>
+            <li class="table-row">
+                <div class="col col-0">There are no donors yet.</div>
+            </li>
+            <?php
+        }
         foreach ( $result as $data ) {
             ?>
             <li class="table-row">
