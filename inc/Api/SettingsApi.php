@@ -74,9 +74,9 @@ class SettingsApi
 				$page['position'] 
 			);
 			
-			if ($page['page_title'] == 'Blood Donation Plugin'){
-				add_action( 'load-' . $hookname, array( $this, 'pageSubmit') );
-			}
+			// if ($page['page_title'] == 'Blood Donation Plugin'){
+			// 	add_action( 'load-' . $hookname, array( $this, 'pageSubmit') );
+			// }
 		}
 
         foreach ( $this->admin_subpages as $page ) {
@@ -140,7 +140,7 @@ class SettingsApi
 		}
 	}
 
-	public function pageSubmit( $val ) {
+	/*public function pageSubmit( $val ) {
 		//var_dump($_POST);
 		//var_dump($_SERVER['REQUEST_METHOD']);
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
@@ -210,5 +210,5 @@ class SettingsApi
 			}
 		}
 		
-	}
+	}*/
 }

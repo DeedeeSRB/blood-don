@@ -12,6 +12,8 @@ var browserify   = require( 'browserify' );
 var source       = require( 'vinyl-source-stream' );
 var buffer       = require( 'vinyl-buffer' );
 var stripDebug   = require( 'gulp-strip-debug' );
+var concat 		 = require( 'gulp-concat' );
+var minify 		 = require( 'gulp-minify' );
 
 // Utility plugins
 var rename       = require( 'gulp-rename' );
@@ -61,20 +63,27 @@ function css(done) {
 };
 
 function js() {
-	return browserify({
-		entries: [jsSRC]
-	})
-	.transform( babelify, { presets: [ '@babel/preset-env' ] } )
-	.bundle()
-	.pipe( source( 'myscript.js' ) )
-	.pipe( rename( { extname: '.min.js' } ) )
-	.pipe( buffer() )
-	.pipe( gulpif( options.has( 'production' ), stripDebug() ) )
-	.pipe( sourcemaps.init({ loadMaps: true }) )
-	.pipe( uglify() )
-	.pipe( sourcemaps.write( '.' ) )
-	.pipe( gulp.dest( jsURL ) )
-	.pipe( browserSync.stream() );
+	// return browserify({
+	// 	entries: [jsSRC]
+	// })
+	// .transform( babelify, { presets: [ '@babel/preset-env' ] } )
+	// .bundle()
+	// .pipe( source( 'myscript.js' ) )
+	// .pipe( rename( { extname: '.min.js' } ) )
+	// .pipe( buffer() )
+	// //.pipe( gulpif( options.has( 'production' ), stripDebug() ) )
+	// .pipe( sourcemaps.init({ loadMaps: true }) )
+	// .pipe( uglify() )
+	// .pipe( sourcemaps.write( './' ) )
+	// .pipe( gulp.dest( jsURL ) )
+	// .pipe( browserSync.stream() );
+
+	return gulp.src( jsSRC )
+		.pipe( concat( 'myscript.js' ) )
+		.pipe( minify() )
+		.pipe( rename ( { basename: 'myscript.min' } ) )
+		.pipe( gulp.dest( jsURL ) )
+		.pipe( browserSync.stream() );
  };
 
 function reload(done) {

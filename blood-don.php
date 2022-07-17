@@ -42,3 +42,11 @@ if ( class_exists( 'Inc\\Init' ) ) {
 
 register_activation_hook( __FILE__, array( 'Inc\Base\Activate', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'Inc\Base\Deactivate', 'deactivate' ) );
+
+function ideapro_add_javascript()
+{
+	?>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<?php	
+}
+add_action('wp_footer','ideapro_add_javascript');
