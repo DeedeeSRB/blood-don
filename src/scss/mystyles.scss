@@ -48,6 +48,23 @@
 	box-shadow: 0 5px 4px -2px rgba(0, 0, 0, 0.15);
 }
 
+.donor-form {
+  width: 500px;
+}
+
+.input-box {
+  vertical-align: middle;
+  margin: 10px 0px;
+  width: auto;
+  display: flex;
+  align-items: center;
+}
+
+.input-field {
+  margin-left: 10px;
+  //width: auto !important;
+}
+
 .error-box {
   margin: 5px;
   color:rgba(255, 0, 0, 1);
