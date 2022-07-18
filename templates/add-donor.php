@@ -1,6 +1,6 @@
 <div class="donor-form">
     <form name="add_donor_form" id="add_donor_form" onsubmit="return false">
-        <div id="response_div"></div>
+        <div id="add_donor_response_div"></div>
         <div class="input-box">
             <label for="first_name">First Name: </label>
             <input type="text" class="input-field" id="first_name" name="first_name" placeholder="First Name" maxlength="45" required>

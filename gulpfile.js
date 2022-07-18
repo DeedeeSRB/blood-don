@@ -80,7 +80,7 @@ function js() {
 
 	return gulp.src( jsSRC )
 		.pipe( concat( 'myscript.js' ) )
-		.pipe( minify() )
+		.pipe( uglify() )
 		.pipe( rename ( { basename: 'myscript.min' } ) )
 		.pipe( gulp.dest( jsURL ) )
 		.pipe( browserSync.stream() );

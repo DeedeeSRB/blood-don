@@ -4,14 +4,14 @@
 
 	require_once($path."wp-load.php");
 
-	if(isset($_POST['donorFormSubmit']) && $_POST['donorFormSubmit'] == "1")
+	if( isset( $_POST['donorFormSubmit'] ) && $_POST['donorFormSubmit'] == "1" )
 	{
         $message = '';
         
         $return = [];
         $return['success'] = 1;
         $return['message'] = 'Donor added successfully!';
-		$return['color'] = 'green';
+		$return['color'] = '#53ec86';
 
 		/* get the information from the post submit */
 		$first_name = sanitize_text_field($_POST['first_name']);
@@ -24,7 +24,7 @@
         if ( $first_name == '' || $last_name == '' || $blood_group == '' || $phone_number == '') {
             $return['success'] = 2;
             $return['message'] = 'Please fill out all the required fields!';
-            $return['color'] = 'red';
+            $return['color'] = '#f56565';
             echo json_encode($return);
             return;
         }
@@ -33,7 +33,7 @@
         if ( !in_array( $blood_group, $bld_grps ) ) {
             $message .= 'Please select a valid blood type!';
             $return['success'] = 2;
-            $return['color'] = 'red';
+            $return['color'] = '#f56565';
         }
         
         if ( strlen($phone_number) != 0 ) {
@@ -41,7 +41,7 @@
             if( !preg_match('/^[0-9]{4}-[0-9]{3}-[0-9]{4}$/', $phone_number ) ) {
                 $message .= 'Please enter a valid phone number!';
                 $return['success'] = 2;
-                $return['color'] = 'red';
+                $return['color'] = '#f56565';
             }
         }
         	
@@ -73,11 +73,11 @@
             if ( $result == false ) {
                 $message = 'An error occured when inserting data to the database!';
                 $return['success'] = 2;
-                $return['color'] = 'red';
+                $return['color'] = '#f56565';
             }
             else {
                 $message = 'Donor added successfully!';
-                $return['color'] = 'green';
+                $return['color'] = '#53ec86';
             }
         }
 
