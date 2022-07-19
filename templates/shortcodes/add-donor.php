@@ -36,6 +36,6 @@
             <label for="address">Address: </label>
             <textarea class="input-field" id="address" name="address" placeholder="Over there at that street" maxlength="100"></textarea>
         </div>
-        <input type="submit" name="donor_submit" id="donor_submit" value="Submit" onclick="submit_contact_form()">
+        <input type="submit" name="donor_submit" id="donor_submit" value="Submit" onclick="submit_add_donor_form()">
     </form>
 </div>

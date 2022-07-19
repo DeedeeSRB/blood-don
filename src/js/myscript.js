@@ -1,12 +1,12 @@
 
-function submit_contact_form()
+function submit_add_donor_form()
 {
 	if ( !document.forms['add_donor_form'].reportValidity() ) {
 		$("#add_donor_response_div").show();
 		$("#add_donor_response_div").html('Please fill out all the required fields!');
 		$("#add_donor_response_div").css("background-color", "#f56565");
-		$("#add_donor_response_div").css("padding","20px");
-		$("#add_donor_response_div").delay(2000).fadeOut(500, function() { $(this).hide(); });
+		$("#add_donor_response_div").css("padding","5px 15px");
+		$("#add_donor_response_div").delay(3000).fadeOut(500, function() { $(this).hide(); });
 		return;
 	}
 
@@ -21,10 +21,10 @@ function submit_contact_form()
 	fd.append('email',$("#email").val());
 	fd.append('address',$("#address").val());
 
-	js_submit(fd, submit_contact_form_callback, submitUrl);
+	js_submit(fd, submit_add_donor_callback, submitUrl);
 }
 
-function submit_contact_form_callback(data)
+function submit_add_donor_callback(data)
 {
 	var jdata = JSON.parse(data);
 
@@ -35,12 +35,55 @@ function submit_contact_form_callback(data)
 	$("#add_donor_response_div").show();
 	$("#add_donor_response_div").html(mess);
 	$("#add_donor_response_div").css("background-color", color);
-	$("#add_donor_response_div").css("padding","20px");
-	$("#add_donor_response_div").delay(2000).fadeOut(500, function() { $(this).hide(); });
+	$("#add_donor_response_div").css("padding","5px 15px");
+	$("#add_donor_response_div").delay(3000).fadeOut(500, function() { $(this).hide(); });
 
 	if ( success == 1 && $("#donors-table").length ) {
 		$("#donors-table").load(location.href + " #donors-table");
 		//location.reload();
+	}
+}
+
+function fill_donor_details() {
+	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/get-donor-process.php";
+	var fd = new FormData();
+	
+	fd.append('getDonorForm','1');
+	fd.append('id',$("#ud_id").val());
+
+	js_submit(fd, fill_donor_details_callback, submitUrl);
+}
+
+function fill_donor_details_callback(data) {
+
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+	var mess = jdata.message;
+	var color = jdata.color;
+
+	if ( success == 2) {
+		$("#update_donor_response_div").show();
+		$("#update_donor_response_div").html(mess);
+		$("#update_donor_response_div").css("background-color", color);
+		$("#update_donor_response_div").css("padding","5px 15px");
+		$("#update_donor_response_div").delay(3000).fadeOut(500, function() { $(this).hide(); });
+
+		$("#ud_first_name").val("");
+		$("#ud_last_name").val("");
+		$("#ud_blood_group").val("");
+		$("#ud_phone_number").val("");
+		$("#ud_email").val("");
+		$("#ud_address").val("");
+	}
+
+	if ( success == 1 ) {
+		$("#ud_first_name").val(jdata.first_name);
+		$("#ud_last_name").val(jdata.last_name);
+		$("#ud_blood_group").val(jdata.blood_group);
+		$("#ud_phone_number").val(jdata.phone_number);
+		$("#ud_email").val(jdata.email);
+		$("#ud_address").val(jdata.address);
 	}
 }
 
@@ -92,7 +135,6 @@ function js_submit( fd, callback, submitUrl )
 
 window.addEventListener("load", function() {
 
-	// store tabs variables
 	var tabs = document.querySelectorAll("ul.nav-tabs > li");
 	
 	for (let i = 0; i < tabs.length; i++) {
@@ -113,5 +155,12 @@ window.addEventListener("load", function() {
 		document.querySelector(activePaneID).classList.add("active");
 
 	}
+
+	$("#ud_id").change(function() {
+		if ($("#ud_id").val() != "") {
+			fill_donor_details();
+		}
+		
+	});
 
 });
