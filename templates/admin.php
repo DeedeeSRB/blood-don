@@ -42,16 +42,36 @@
 					}
 				?>
 			</ul>
-            <form method="post" action="<?php menu_page_url( 'blood_donation_plugin' ) ?>">
-                <?php 
-                    settings_fields( 'blood_don_options_group' );
-                    do_settings_sections( 'blood_donation_plugin' );
-                    submit_button( 'Add Donor' );
-                ?>
-            </form>
+			<div style="display: inline-flex;">
+				<div>
+					<h2>Add donation</h2>
+					<form method="post" action="<?php menu_page_url( 'blood_donation_plugin' ) ?>">
+						<?php 
+							settings_fields( 'blood_don_options_group' );
+							do_settings_sections( 'blood_donation_plugin' );
+							submit_button( 'Add Donor' );
+						?>
+					</form>
+				</div>
+				<div style="margin-left: 100px;">
+					<h2>Update donor</h2>
+					<?php echo do_shortcode( '[update-donor]' ); ?>
+				</div>
+			</div>
 		</div>
 		<div id="tab-2" class="tab-pane">
 			<h3>Donations Database</h3>
+			<?php echo do_shortcode( '[donations-table]' ); ?>
+			<div style="display: inline-flex;">
+				<div>
+					<h2>Add donation</h2>
+					<?php echo do_shortcode( '[add-donation]' ); ?>
+				</div>
+				<div>
+					<h2>Update donation</h2>
+					<?php echo do_shortcode( '[update-donation]' ); ?>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
