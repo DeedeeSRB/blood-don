@@ -3,7 +3,7 @@
         <div id="update_donor_response_div"></div>
         <div class="input-box">
             <label for="ud_id">ID: </label>
-            <input type="text" class="input-field" id="ud_id" name="ud_id" placeholder="'1'" maxlength="45" required>
+            <input type="text" class="input-field" id="ud_id" name="ud_id" maxlength="45" required>
         </div>
         <div class="input-box">
             <label for="ud_first_name">First Name: </label>

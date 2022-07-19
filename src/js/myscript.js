@@ -44,8 +44,58 @@ function submit_add_donor_callback(data)
 	}
 }
 
+function submit_add_donation_form()
+{
+	if ( !document.forms['add_donation_form'].reportValidity() ) {
+		$("#add_donation_response_div").show();
+		$("#add_donation_response_div").html('Please fill out all the required fields!');
+		$("#add_donation_response_div").css("background-color", "#f56565");
+		$("#add_donation_response_div").css("padding","5px 15px");
+		$("#add_donation_response_div").delay(3000).fadeOut(500, function() { $(this).hide(); });
+		return;
+	}
+
+	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/add-donation-process.php";
+	var fd = new FormData();
+	
+	fd.append('donationFormSubmit','1');
+	fd.append('donor_id',$("#donor_id").val());
+	fd.append('amount_ml',$("#amount_ml").val());
+	fd.append('time',$("#time").val());
+	fd.append('status',$("#status").val());
+
+	js_submit(fd, submit_add_donation_callback, submitUrl);
+}
+
+function submit_add_donation_callback(data)
+{
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+	var mess = jdata.message;
+	var color = jdata.color;
+
+	$("#add_donation_response_div").show();
+	$("#add_donation_response_div").html(mess);
+	$("#add_donation_response_div").css("background-color", color);
+	$("#add_donation_response_div").css("padding","5px 15px");
+	$("#add_donation_response_div").delay(3000).fadeOut(500, function() { $(this).hide(); });
+
+	if ( success == 1 && $("#donations-table").length ) {
+		$("#donations-table").load(location.href + " #donations-table");
+		//location.reload();
+	}
+}
+
 function fill_donor_details() {
-	get_donor($("#ud_id").val(), fill_donor_details_callback);
+
+	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/get-donor-process.php";
+	var fd = new FormData();
+	
+	fd.append('getDonorForm','1');
+	fd.append('id', $("#ud_id").val());
+
+	js_submit(fd, fill_donor_details_callback, submitUrl);
 }
 
 function fill_donor_details_callback(data) {
@@ -69,6 +119,44 @@ function fill_donor_details_callback(data) {
 	}
 }
 
+function fill_donation_details() {
+	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/get-donation-process.php";
+	var fd = new FormData();
+	
+	fd.append('getDonationForm','1');
+	fd.append('id', $("#donation_id").val());
+
+	js_submit(fd, fill_donation_details_callback, submitUrl);
+}
+
+function fill_donation_details_callback(data) {
+
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+	var mess = jdata.message;
+
+	if (success == 2) {
+		$("#update_donation_response_div").show();
+		$("#update_donation_response_div").html(mess);
+		$("#update_donation_response_div").css("background-color", "#f56565");
+		$("#update_donation_response_div").css("padding","5px 15px");
+		$("#update_donation_response_div").delay(3000).fadeOut(500, function() { $(this).hide(); });
+
+		$("#ud_donor_id").val("");
+		$("#ud_amount_ml").val("");
+		$("#ud_time").val("");
+		$("#ud_status").val("");
+	}
+
+	if (success == 1) {
+		$("#ud_donor_id").val(jdata.donor_id);
+		$("#ud_amount_ml").val(jdata.amount_ml);
+		$("#ud_time").val(jdata.time);
+		$("#ud_status").val(jdata.status);
+	}
+}
+
 function submit_update_donor_form() {
 
 	if ( !document.forms['update_donor_form'].reportValidity() ) {
@@ -80,37 +168,19 @@ function submit_update_donor_form() {
 		return;
 	}
 
-	get_donor($("#ud_id").val(), get_update_donor_callback);
-}
+	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/update-donor-process.php";
+	var fd = new FormData();
+	
+	fd.append('updateDonorForm','1');
+	fd.append('id',$("#ud_id").val());
+	fd.append('first_name',$("#ud_first_name").val());
+	fd.append('last_name',$("#ud_last_name").val());
+	fd.append('blood_group',$("#ud_blood_group").val());
+	fd.append('phone_number',$("#ud_phone_number").val());
+	fd.append('email',$("#ud_email").val());
+	fd.append('address',$("#ud_address").val());
 
-function get_update_donor_callback(data) {
-
-	var jdata = JSON.parse(data);
-
-	var success = jdata.success;
-	var mess = jdata.message;
-	var id = jdata.id;
-
-	if (success == 2) {
-		cantFindDonor(mess);
-	}
-
-	if (success == 1) {
-		var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/update-donor-process.php";
-		var fd = new FormData();
-		
-		fd.append('updateDonorForm','1');
-		fd.append('id',id);
-		fd.append('first_name',$("#ud_first_name").val());
-		fd.append('last_name',$("#ud_last_name").val());
-		fd.append('blood_group',$("#ud_blood_group").val());
-		fd.append('phone_number',$("#ud_phone_number").val());
-		fd.append('email',$("#ud_email").val());
-		fd.append('address',$("#ud_address").val());
-
-		js_submit(fd, update_donor_callback, submitUrl);
-	}
-
+	js_submit(fd, update_donor_callback, submitUrl);
 }
 
 function update_donor_callback(data) {
@@ -129,6 +199,50 @@ function update_donor_callback(data) {
 	
 	if ( success == 1 && $("#donors-table").length ) {
 		$("#donors-table").load(location.href + " #donors-table");
+		//location.reload();
+	}
+}
+
+function submit_update_donation_form() {
+
+	if ( !document.forms['update_donation_form'].reportValidity() ) {
+		$("#update_donation_response_div").show();
+		$("#update_donation_response_div").html('Please fill out all the required fields!');
+		$("#update_donation_response_div").css("background-color", "#f56565");
+		$("#update_donation_response_div").css("padding","5px 15px");
+		$("#update_donation_response_div").delay(3000).fadeOut(500, function() { $(this).hide(); });
+		return;
+	}
+
+	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/update-donation-process.php";
+	var fd = new FormData();
+	
+	fd.append('updateDonationForm','1');
+	fd.append('id',$("#donation_id").val());
+	fd.append('donor_id',$("#ud_donor_id").val());
+	fd.append('amount_ml',$("#ud_amount_ml").val());
+	fd.append('time',$("#ud_time").val());
+	fd.append('status',$("#ud_status").val());
+
+	js_submit(fd, update_donation_callback, submitUrl);
+}
+
+function update_donation_callback(data) {
+	
+	var jdata = JSON.parse(data);
+	
+	var success = jdata.success;
+	var mess = jdata.message;
+	var color = jdata.color;
+
+	$("#update_donation_response_div").show();
+	$("#update_donation_response_div").html(mess);
+	$("#update_donation_response_div").css("background-color", color);
+	$("#update_donation_response_div").css("padding","5px 15px");
+	$("#update_donation_response_div").delay(3000).fadeOut(500, function() { $(this).hide(); });
+	
+	if ( success == 1 && $("#donations-table").length ) {
+		$("#donations-table").load(location.href + " #donations-table");
 		//location.reload();
 	}
 }
@@ -167,15 +281,37 @@ function delete_donor_callback(data)
 	}
 }
 
-function get_donor( id, callback ) {
+function delete_donation(button) {
+	
+	idToDelete = button.value;
 
-	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/get-donor-process.php";
+	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/delete-donation-process.php";
 	var fd = new FormData();
 	
-	fd.append('getDonorForm','1');
-	fd.append('id', id);
+	fd.append('deleteDonationSubmit','1');
+	fd.append('id_to_delete', idToDelete);
+	js_submit(fd, delete_donation_callback, submitUrl);
+}
 
-	js_submit(fd, callback, submitUrl);
+function delete_donation_callback(data)
+{
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+	var mess = jdata.message;
+	var color = jdata.color;
+	var id = jdata.id;
+
+	if ( success == 1 ) {
+		$("#delete_donation_response_div_"+id).show();
+		$("#delete_donation_response_div_"+id).children().css("background-color", color);
+		$("#delete_donation_response_div_"+id).children().children().html(mess);
+		$('#delete_donation_'+id).remove();
+		$("#delete_donation_response_div_"+id).delay(2000).fadeOut(500, function() { $(this).remove(); });
+	}
+	else if ( success == 2 ) {
+		alert(mess);
+	}
 }
 
 function cantFindDonor(mess) {
@@ -228,11 +364,19 @@ window.addEventListener("load", function() {
 
 	}
 
-	$("#ud_id").change(function() {
-		if ($("#ud_id").val() != "") {
-			fill_donor_details();
-		}
-		
-	});
-
+	if ($("#ud_id").length) {
+		$("#ud_id").change(function() {
+			if ($("#ud_id").val() != "") {
+				fill_donor_details();
+			}
+		});
+	}
+	
+	if ($("#donation_id").length) {
+		$("#donation_id").change(function() {
+			if ($("#donation_id").val() != "") {
+				fill_donation_details();
+			}
+		});
+	}
 });

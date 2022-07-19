@@ -35,15 +35,12 @@
             $return['color'] = '#f56565';
         }
         
-        if ( strlen($phone_number) != 0 ) {
-            $message .= strlen($phone_number);
-            if( !preg_match('/^[0-9]{4}-[0-9]{3}-[0-9]{4}$/', $phone_number ) ) {
-                $message .= 'Please enter a valid phone number!';
-                $return['success'] = 2;
-                $return['color'] = '#f56565';
-            }
+        if( !preg_match('/^[0-9]{4}-[0-9]{3}-[0-9]{4}$/', $phone_number ) ) {
+            $message .= 'Please enter a valid phone number!';
+            $return['success'] = 2;
+            $return['color'] = '#f56565';
         }
-        	
+         	
 
         if ( $return['success'] == 1) {
             global $wpdb;
@@ -70,7 +67,7 @@
             );
 
             if ( $result == false ) {
-                $message = 'An error occured when inserting data to the database!';
+                $message = 'An error occured when adding donor!';
                 $return['success'] = 2;
                 $return['color'] = '#f56565';
             }

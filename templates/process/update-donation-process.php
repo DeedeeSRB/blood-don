@@ -4,7 +4,7 @@
 
 	require_once($path."wp-load.php");
 
-	if( isset( $_POST['updateDonorForm'] ) && $_POST['updateDonorForm'] == "1")
+	if( isset( $_POST['updateDonationForm'] ) && $_POST['updateDonationForm'] == "1")
 	{
         $id_to_update = sanitize_text_field( $_POST['id'] );
 
@@ -12,48 +12,60 @@
         
         $return = [];
         $return['success'] = 1;
-        $return['message'] = 'Update donor with id ' . $id_to_update;
+        $return['message'] = 'Update donation with id ' . $id_to_update;
 		$return['color'] = '#53ec86';
 		
-        global $wpdb;
-        $tablename_donors = $wpdb->prefix . 'donors'; 
+        $donor_id = sanitize_text_field($_POST['donor_id']);
+		$amount_ml = sanitize_text_field($_POST['amount_ml']);
+		$time = $_POST['time'];
+        $status = sanitize_text_field($_POST['status']);
 
-        $query = "SELECT * FROM $tablename_donors WHERE id = $id_to_update";
+        global $wpdb;
+        $tablename_donations = $wpdb->prefix . 'donations'; 
+
+        $query = "SELECT * FROM $tablename_donations WHERE id = $id_to_update";
 
         $result = $wpdb->get_row( $query );
 
         if ( $result === null ) {
             $return['success'] = 2;
-            $return['message'] = 'Couldn\'t find donor with id ' . $id_to_update;
+            $return['message'] = 'Couldn\'t find donation with id ' . $id_to_update;
             $return['color'] = '#f56565';
             echo json_encode($return);
             return;
         }
 
-        $first_name = sanitize_text_field($_POST['first_name']);
-		$last_name = sanitize_text_field($_POST['last_name']);
-		$blood_group = sanitize_text_field($_POST['blood_group']);
-        $email = sanitize_email($_POST['email']);
-		$phone_number = sanitize_text_field($_POST['phone_number']);
-		$address = sanitize_textarea_field($_POST['address']);
+        $tablename_donors = $wpdb->prefix . 'donors'; 
 
-        if ( $first_name == '' || $last_name == '' || $blood_group == '' || $phone_number == '') {
+        $query = "SELECT * FROM $tablename_donors WHERE id = $donor_id";
+
+        $result = $wpdb->get_row( $query );
+
+        if ( $result === null ) {
+            $return['success'] = 2;
+            $return['message'] = 'Couldn\'t find donor with id ' . $donor_id;
+            $return['color'] = '#f56565';
+            echo json_encode($return);
+            return;
+        }
+
+        if ( $donor_id == '' || $amount_ml == '' || $time == '' || $status == '') {
             $return['success'] = 2;
             $return['message'] = 'Please fill out all the required fields!';
             $return['color'] = '#f56565';
             echo json_encode($return);
             return;
         }
-       
-        $bld_grps = array( 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-' );
-        if ( !in_array( $blood_group, $bld_grps ) ) {
-            $message .= 'Please select a valid blood type!';
+
+        if ( !is_numeric( $amount_ml ) ) {
+            $message .= 'Please enter a numeric amount!';
             $return['success'] = 2;
             $return['color'] = '#f56565';
         }
-        
-        if( !preg_match('/^[0-9]{4}-[0-9]{3}-[0-9]{4}$/', $phone_number ) ) {
-            $message .= 'Please enter a valid phone number!';
+
+        $status_avi = array( 'Completed', 'In progress', 'Planned' );
+        if ( !in_array( $status, $status_avi ) ) {
+            $message .= 'Please select a valid status!';
             $return['success'] = 2;
             $return['color'] = '#f56565';
         }
@@ -62,28 +74,24 @@
         if ( $return['success'] == 1 ) {
 
             $result = $wpdb->update( 
-                $tablename_donors, 
+                $tablename_donations, 
                 array( 
-                    'first_name' => $first_name, 
-                    'last_name' => $last_name, 
-                    'blood_group' => $blood_group, 
-                    'phone_number' => $phone_number, 
-                    'email' => $email, 
-                    'address' => $address, 
-                ), 
+                    'donor_id' => $donor_id, 
+                    'amount_ml' => $amount_ml, 
+                    'time' => $time, 
+                    'status' => $status, 
+                ),
                 array( 'id' => $id_to_update ), 
                 array( 
+                    '%d', 
+                    '%d',
                     '%s', 
                     '%s',
-                    '%s', 
-                    '%s',
-                    '%s', 
-                    '%s', 
                 )
             );
 
             if ( $result === false ) {
-                $message = 'Couldn\'t update donor with id ' . $id_to_update;
+                $message = 'Couldn\'t update donation with id ' . $id_to_update;
                 $return['success'] = 2;
                 $return['color'] = '#f56565';
             }

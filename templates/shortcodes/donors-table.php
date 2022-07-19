@@ -1,7 +1,7 @@
 <div id="donors-table">
     <ul class="responsive-table">
         <li class="table-header">
-            <div class="col col-1">Id</div>
+            <div class="col col-1">ID</div>
             <div class="col col-2">First Name</div>
             <div class="col col-3">Last Name</div>
             <div class="col col-4">Blood Group</div>
