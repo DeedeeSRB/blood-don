@@ -35,6 +35,7 @@
         }
                        
         if ( $message != '' ) $return['message'] = $message;
+        $return['id'] = $id_to_find;
 		echo json_encode($return);
 	}
 

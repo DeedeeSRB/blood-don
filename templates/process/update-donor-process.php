@@ -4,16 +4,18 @@
 
 	require_once($path."wp-load.php");
 
-	if( isset( $_POST['donorFormSubmit'] ) && $_POST['donorFormSubmit'] == "1" )
+	if( isset( $_POST['updateDonorForm'] ) && $_POST['updateDonorForm'] == "1")
 	{
+        $id_to_update = sanitize_text_field( $_POST['id'] );
+
         $message = '';
         
         $return = [];
         $return['success'] = 1;
-        $return['message'] = 'Donor added successfully!';
+        $return['message'] = 'Update donor with id ' . $id_to_update;
 		$return['color'] = '#53ec86';
-
-		$first_name = sanitize_text_field($_POST['first_name']);
+		
+        $first_name = sanitize_text_field($_POST['first_name']);
 		$last_name = sanitize_text_field($_POST['last_name']);
 		$blood_group = sanitize_text_field($_POST['blood_group']);
         $email = sanitize_email($_POST['email']);
@@ -43,13 +45,13 @@
                 $return['color'] = '#f56565';
             }
         }
-        	
 
-        if ( $return['success'] == 1) {
+        if ( $return['success'] == 1 ) {
+
             global $wpdb;
             $tablename_donors = $wpdb->prefix . 'donors'; 
 
-            $result = $wpdb->insert( 
+            $result = $wpdb->update( 
                 $tablename_donors, 
                 array( 
                     'first_name' => $first_name, 
@@ -59,6 +61,7 @@
                     'email' => $email, 
                     'address' => $address, 
                 ), 
+                array( 'id' => $id_to_update ), 
                 array( 
                     '%s', 
                     '%s',
@@ -66,20 +69,21 @@
                     '%s',
                     '%s', 
                     '%s', 
-                ) 
+                )
             );
 
-            if ( $result == false ) {
-                $message = 'An error occured when inserting data to the database!';
+            if ( $result === false ) {
+                $message = 'Couldn\'t update donor with id ' . $id_to_update;
                 $return['success'] = 2;
                 $return['color'] = '#f56565';
             }
             else {
-                $message = 'Donor added successfully!';
+                $message = 'Updated donor with id ' . $id_to_update . ' successfuly';
+                $return['success'] = 1;
                 $return['color'] = '#53ec86';
             }
         }
-
+                       
         if ( $message != '' ) $return['message'] = $message;
 		echo json_encode($return);
 	}
