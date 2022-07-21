@@ -14,6 +14,8 @@ class CustomShortcode
 
         add_shortcode( 'bd-logout-page', array( 'Inc\Base\CustomShortcode', 'logoutPage' ) );
 
+        add_shortcode( 'bd-home-page', array( 'Inc\Base\CustomShortcode', 'homePage' ) );
+
         add_shortcode( 'donors-table', array( 'Inc\Base\CustomShortcode', 'donorsTableShortcode' ) );
         add_shortcode( 'add-donor', array( 'Inc\Base\CustomShortcode', 'addDonorShortcode' ) );
         add_shortcode( 'update-donor', array( 'Inc\Base\CustomShortcode', 'updateDonorShortcode' ) );
@@ -36,6 +38,10 @@ class CustomShortcode
 
     public static function logoutPage() {
         include BD_PLUGIN_PATH . 'templates/shortcodes/bd-logout-page.php';
+    }
+
+    public static function homePage() {
+        include BD_PLUGIN_PATH . 'templates/shortcodes/bd-home-page.php';
     }
 
     public static function donorsTableShortcode() {

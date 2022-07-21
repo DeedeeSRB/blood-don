@@ -15,6 +15,18 @@ class AjaxManager
         add_action("wp_ajax_bd_login", array( 'Inc\Base\AjaxManager' , 'bd_login' ) );
         add_action("wp_ajax_nopriv_bd_login", array( 'Inc\Base\AjaxManager' , 'bd_login' ) );
 
+        add_action("wp_ajax_bd_be_donor", array( 'Inc\Base\AjaxManager' , 'bd_be_donor' ) );
+        add_action("wp_ajax_nopriv_bd_be_donor", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
+
+        add_action("wp_ajax_bd_cancel_donor", array( 'Inc\Base\AjaxManager' , 'bd_cancel_donor' ) );
+        add_action("wp_ajax_nopriv_bd_cancel_donor", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
+
+        add_action("wp_ajax_bd_add_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_add_tba_donation' ) );
+        add_action("wp_ajax_nopriv_bd_cancel_donor", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
+
+        add_action("wp_ajax_bd_delete_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_delete_tba_donation' ) );
+        add_action("wp_ajax_nopriv_bd_delete_tba_donation", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
+
         add_action("wp_ajax_add_donor", array( 'Inc\Base\AjaxManager' , 'add_donor' ) );
         add_action("wp_ajax_get_donor", array( 'Inc\Base\AjaxManager' , 'get_donor' ) );
         add_action("wp_ajax_update_donor", array( 'Inc\Base\AjaxManager' , 'update_donor' ) );
@@ -82,8 +94,10 @@ class AjaxManager
             'first_name'            => $first_name,   
             'last_name'             => $last_name,   
             'meta_input'            => array(
+                'is_donor'          => false, 
                 'phone_number'      => $phone_number, 
                 'address'           => $address,
+                'blood_group'           => '',
             ),
         );
 
@@ -148,6 +162,168 @@ class AjaxManager
         $return['message'] = 'Logged in successfuly';
         exit( json_encode( $return ) );
 
+    }
+
+    public static function bd_be_donor() {
+
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_be_donor_nonce")) {
+            $return = [];
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            exit( json_encode( $return ) );
+        }  
+
+        $blood_group = sanitize_text_field($_POST['blood_group']);
+        $bld_grps = array( 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-' );
+        if ( !in_array( $blood_group, $bld_grps ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'Please select a valid blood type!';
+            exit( json_encode( $return ) );
+        }
+        
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            exit( json_encode( $return ) );
+        } 
+        
+        $is_donor_result = update_user_meta( $current_user->id, 'is_donor', true );
+        $blood_group_result = update_user_meta( $current_user->id, 'blood_group', $blood_group );
+
+        if ( $is_donor_result === false || $blood_group_result === false ) {
+            $return['success'] = 2;
+            $return['message'] = 'Nothing changed';
+            exit( json_encode( $return ) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'You became a donor!';
+        exit( json_encode( $return ) );
+    }
+
+    public static function bd_cancel_donor() {
+
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_cancel_donor_nonce")) {
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            exit( json_encode( $return ) );
+        }  
+        
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            exit( json_encode( $return ) );
+        } 
+        
+        $is_donor_result = update_user_meta( $current_user->id, 'is_donor', false );
+        $blood_group_result = update_user_meta( $current_user->id, 'blood_group', '' );
+
+        if ( $is_donor_result === false || $blood_group_result === false ) {
+            $return['success'] = 2;
+            $return['message'] = 'Nothing changed';
+            exit( json_encode( $return ) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'You are no longer a donor!';
+        exit( json_encode( $return ) );
+    }
+
+    public static function bd_add_tba_donation() {
+
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_tba_donation_submit_nonce")) {
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            exit( json_encode( $return ) );
+        }
+        
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            exit( json_encode( $return ) );
+        } 
+
+        $donor_id = $current_user->ID;
+		$amount_ml = sanitize_text_field($_POST['amount_ml']);
+		$time = $_POST['time'];
+
+        if ( !is_numeric( $amount_ml ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'Please enter a numeric amount!';
+            exit( json_encode( $return ) );
+        }
+
+        global $wpdb;
+        $tablename_donations = $wpdb->prefix . 'donations'; 
+
+        $result = $wpdb->insert( 
+            $tablename_donations, 
+            array( 
+                'donor_id' => $donor_id, 
+                'amount_ml' => $amount_ml, 
+                'time' => $time, 
+                'status' => 'To Be Accepted', 
+            ), 
+            array( 
+                '%d', 
+                '%d',
+                '%s', 
+                '%s',
+            ) 
+        );
+
+        if ( $result == false ) {
+            $return['success'] = 2;
+            $return['message'] = 'An error occured when adding donation!';
+            exit( json_encode( $return ) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'Donation added successfully!';
+        exit( json_encode( $return ) );
+    }
+
+    public static function bd_delete_tba_donation() {
+
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_delete_tba_donation_nonce")) {
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            exit( json_encode( $return ) );
+        } 
+
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            exit( json_encode( $return ) );
+        } 
+        
+		$id_to_delete = sanitize_text_field( $_POST['id_to_delete'] );
+		
+        
+        global $wpdb;
+        $tablename_donations = $wpdb->prefix . 'donations'; 
+
+        $result = $wpdb->delete( 
+            $tablename_donations, 
+            array( 
+                'id' => $id_to_delete, 
+            ),
+        );
+
+        if ( $result == false ) {
+            $return['success'] = 2;
+            $return['success'] = 'An error occured when deleting donation with id ' . $id_to_delete;
+            exit( json_encode( $return ) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'Donation deleted successfully!';          
+        $return['id'] = $id_to_delete;
+		exit( json_encode( $return ) );
     }
 
     public static function add_donor() 

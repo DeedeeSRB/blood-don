@@ -90,6 +90,145 @@ function submit_bd_register_callback(data)
 	}
 }
 
+//// BECOME A DONOR ////
+function submit_bd_be_donor(button) {
+	if ( !document.forms['bd_be_donor_form'].reportValidity() ) return;
+
+	var fd = new FormData();
+
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "bd_be_donor");
+	fd.append('blood_group',$("#bd_be_donor_bg").val());
+
+	js_submit(fd, submit_bd_be_donor_callback);
+}
+
+function submit_bd_be_donor_callback(data) {
+
+	var jdata = JSON.parse(data);
+	
+	var success = jdata.success;
+	var mess = jdata.message;
+
+	$("#bd_be_donor_alert_box").show();
+	$("#bd_be_donor_alert_box").html('<div class="fs-5">' + mess + '</div>');
+	$("#bd_be_donor_alert_box").delay(3000).fadeOut(500, function() { $(this).hide(); });
+
+	if (success == 1 ) {
+		location.reload();
+	}
+
+	if (success == 3 ) {
+		window.location.replace('http://localhost/wordpress/login');
+	}
+}
+
+//// STOP BEING A DONOR ////
+
+function bd_cancel_donor(button) {
+
+	var fd = new FormData();
+
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "bd_cancel_donor");
+	fd.append('donor_to_cancel', button.value);
+
+	js_submit(fd, submit_bd_cancel_donor_callback);
+}
+
+function submit_bd_cancel_donor_callback(data) {
+
+	var jdata = JSON.parse(data);
+	
+	var success = jdata.success;
+	var mess = jdata.message;
+
+	$("#bd_cancel_donor_alert_box").show();
+	$("#bd_cancel_donor_alert_box").html('<div class="fs-5">' + mess + '</div>');
+	$("#bd_cancel_donor_alert_box").delay(3000).fadeOut(500, function() { $(this).hide(); });
+
+	if (success == 1 ) {
+		location.reload();
+	}
+
+	if (success == 3 ) {
+		window.location.replace('http://localhost/wordpress/login');
+	}
+}
+
+//// CREATE TBA DONATION ////
+function submit_bd_tba_donation_submit_form(button) {
+	if ( !document.forms['bd_tba_donation_form'].reportValidity() ) return;
+
+	var fd = new FormData();
+	
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "bd_add_tba_donation");
+	fd.append('amount_ml',$("#bd_tba_donation_amount_ml").val());
+	fd.append('time',$("#bd_tba_donation_time").val());
+
+	js_submit(fd, submit_bd_add_tba_donation_callback);
+}
+
+function submit_bd_add_tba_donation_callback(data) {
+	
+	var jdata = JSON.parse(data);
+	
+	var success = jdata.success;
+	var mess = jdata.message;
+
+	$("#bd_home_page_alert_box").show();
+	$("#bd_home_page_alert_box").html('<div class="fs-6">' + mess + '</div>');
+	$("#bd_home_page_alert_box").delay(3000).fadeOut(500, function() { $(this).hide(); });
+
+	if (success == 1 ) {
+		$("#bd_tba_donations_table").load(location.href + " #bd_tba_donations_table");
+		//location.reload();
+	}
+
+	if (success == 3 ) {
+		window.location.replace('http://localhost/wordpress/login');
+	}
+}
+
+//// DELETE TBA DONATION ////
+function bd_delete_tba_donation_submit(button) {
+
+	idToDelete = button.value;
+
+	var fd = new FormData();
+	
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "bd_delete_tba_donation");
+	fd.append('id_to_delete', idToDelete);
+	js_submit(fd, bd_delete_tba_donation_callback);
+}
+
+function bd_delete_tba_donation_callback(data) {
+
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+	var id = jdata.id;
+
+	if ( success == 1 ) {
+		$('#bd_delete_tba__donation_'+id).remove();
+		$("#bd_delete_tba_donation_response_div_"+id).show();
+		$("#bd_delete_tba_donation_response_div_"+id).html('<div class="fs-6">Donation deleted successfuly!</div>');
+		$("#bd_delete_tba_donation_response_div_"+id).delay(2000).fadeOut(500, function() { $(this).remove(); });
+	}
+	else if ( success == 2 ) {
+		alert(mess);
+	}
+}
 
 //// ADD DONOR ////
 function submit_add_donor_form(button)
