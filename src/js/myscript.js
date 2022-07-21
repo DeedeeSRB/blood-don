@@ -1,5 +1,6 @@
 
-function submit_add_donor_form()
+//// ADD DONOR ////
+function submit_add_donor_form(button)
 {
 	if ( !document.forms['add_donor_form'].reportValidity() ) {
 		$("#add_donor_response_div").show();
@@ -10,10 +11,12 @@ function submit_add_donor_form()
 		return;
 	}
 
-	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/add-donor-process.php";
 	var fd = new FormData();
+
+	nonce = $(button).attr("data-nonce");
 	
-	fd.append('donorFormSubmit','1');
+	fd.append('nonce', nonce);
+	fd.append('action', "add_donor");
 	fd.append('first_name',$("#first_name").val());
 	fd.append('last_name',$("#last_name").val());
 	fd.append('blood_group',$("#blood_group").val());
@@ -21,13 +24,13 @@ function submit_add_donor_form()
 	fd.append('email',$("#email").val());
 	fd.append('address',$("#address").val());
 
-	js_submit(fd, submit_add_donor_callback, submitUrl);
+	js_submit(fd, submit_add_donor_callback);
 }
 
 function submit_add_donor_callback(data)
 {
 	var jdata = JSON.parse(data);
-
+	
 	var success = jdata.success;
 	var mess = jdata.message;
 	var color = jdata.color;
@@ -44,7 +47,9 @@ function submit_add_donor_callback(data)
 	}
 }
 
-function submit_add_donation_form()
+
+//// ADD DONATION ////
+function submit_add_donation_form(button)
 {
 	if ( !document.forms['add_donation_form'].reportValidity() ) {
 		$("#add_donation_response_div").show();
@@ -55,16 +60,18 @@ function submit_add_donation_form()
 		return;
 	}
 
-	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/add-donation-process.php";
 	var fd = new FormData();
 	
-	fd.append('donationFormSubmit','1');
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "add_donation");
 	fd.append('donor_id',$("#donor_id").val());
 	fd.append('amount_ml',$("#amount_ml").val());
 	fd.append('time',$("#time").val());
 	fd.append('status',$("#status").val());
 
-	js_submit(fd, submit_add_donation_callback, submitUrl);
+	js_submit(fd, submit_add_donation_callback);
 }
 
 function submit_add_donation_callback(data)
@@ -87,15 +94,16 @@ function submit_add_donation_callback(data)
 	}
 }
 
+
+//// GET DONOR ////
 function fill_donor_details() {
 
-	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/get-donor-process.php";
 	var fd = new FormData();
 	
-	fd.append('getDonorForm','1');
+	fd.append('action', "get_donor");
 	fd.append('id', $("#ud_id").val());
 
-	js_submit(fd, fill_donor_details_callback, submitUrl);
+	js_submit(fd, fill_donor_details_callback);
 }
 
 function fill_donor_details_callback(data) {
@@ -119,14 +127,16 @@ function fill_donor_details_callback(data) {
 	}
 }
 
+
+//// GET DONATION ////
 function fill_donation_details() {
-	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/get-donation-process.php";
+	
 	var fd = new FormData();
 	
-	fd.append('getDonationForm','1');
+	fd.append('action', "get_donation");
 	fd.append('id', $("#donation_id").val());
 
-	js_submit(fd, fill_donation_details_callback, submitUrl);
+	js_submit(fd, fill_donation_details_callback);
 }
 
 function fill_donation_details_callback(data) {
@@ -157,7 +167,9 @@ function fill_donation_details_callback(data) {
 	}
 }
 
-function submit_update_donor_form() {
+
+//// UPDATE DONOR ////
+function submit_update_donor_form(button) {
 
 	if ( !document.forms['update_donor_form'].reportValidity() ) {
 		$("#update_donor_response_div").show();
@@ -168,10 +180,12 @@ function submit_update_donor_form() {
 		return;
 	}
 
-	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/update-donor-process.php";
 	var fd = new FormData();
 	
-	fd.append('updateDonorForm','1');
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "update_donor");
 	fd.append('id',$("#ud_id").val());
 	fd.append('first_name',$("#ud_first_name").val());
 	fd.append('last_name',$("#ud_last_name").val());
@@ -180,7 +194,7 @@ function submit_update_donor_form() {
 	fd.append('email',$("#ud_email").val());
 	fd.append('address',$("#ud_address").val());
 
-	js_submit(fd, update_donor_callback, submitUrl);
+	js_submit(fd, update_donor_callback);
 }
 
 function update_donor_callback(data) {
@@ -199,11 +213,14 @@ function update_donor_callback(data) {
 	
 	if ( success == 1 && $("#donors-table").length ) {
 		$("#donors-table").load(location.href + " #donors-table");
+		$("#ud_id").load(location.href + " #ud_id");
 		//location.reload();
 	}
 }
 
-function submit_update_donation_form() {
+
+//// UPDATE DONATION ////
+function submit_update_donation_form(button) {
 
 	if ( !document.forms['update_donation_form'].reportValidity() ) {
 		$("#update_donation_response_div").show();
@@ -214,17 +231,19 @@ function submit_update_donation_form() {
 		return;
 	}
 
-	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/update-donation-process.php";
 	var fd = new FormData();
 	
-	fd.append('updateDonationForm','1');
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "update_donation");
 	fd.append('id',$("#donation_id").val());
 	fd.append('donor_id',$("#ud_donor_id").val());
 	fd.append('amount_ml',$("#ud_amount_ml").val());
 	fd.append('time',$("#ud_time").val());
 	fd.append('status',$("#ud_status").val());
 
-	js_submit(fd, update_donation_callback, submitUrl);
+	js_submit(fd, update_donation_callback);
 }
 
 function update_donation_callback(data) {
@@ -247,16 +266,20 @@ function update_donation_callback(data) {
 	}
 }
 
+
+//// DELETE DONOR ////
 function delete_donor(button) {
 	
-	idToDelete = button.value;
-
-	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/delete-donor-process.php";
 	var fd = new FormData();
 	
-	fd.append('deleteDonorSubmit','1');
+	idToDelete = button.value;
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "delete_donor");
 	fd.append('id_to_delete', idToDelete);
-	js_submit(fd, delete_donor_callback, submitUrl);
+
+	js_submit(fd, delete_donor_callback);
 }
 
 function delete_donor_callback(data)
@@ -281,16 +304,20 @@ function delete_donor_callback(data)
 	}
 }
 
+
+//// DELETE DONATION ////
 function delete_donation(button) {
 	
 	idToDelete = button.value;
 
-	var submitUrl = "http://localhost/wordpress/wp-content/plugins/blood-don/templates/process/delete-donation-process.php";
 	var fd = new FormData();
 	
-	fd.append('deleteDonationSubmit','1');
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "delete_donation");
 	fd.append('id_to_delete', idToDelete);
-	js_submit(fd, delete_donation_callback, submitUrl);
+	js_submit(fd, delete_donation_callback);
 }
 
 function delete_donation_callback(data)
@@ -329,12 +356,12 @@ function cantFindDonor(mess) {
 	$("#ud_address").val("");
 }
 
-function js_submit( fd, callback, submitUrl )
+function js_submit(data, callback)
 {
-	$.ajax( {
-		url: submitUrl,
-		type:'post',
-		data:fd,
+	$.ajax({
+		url: admin_url_object.ajaxurl,
+		method:'post',
+		data:data,
 		contentType:false,
 		processData:false,
 		success: function ( response ) { callback( response ); },
@@ -371,6 +398,12 @@ window.addEventListener("load", function() {
 			}
 		});
 	}
+
+	
+	$('#ud_id').select2({
+		placeholder: 'Select an option'
+	});
+	
 	
 	if ($("#donation_id").length) {
 		$("#donation_id").change(function() {
@@ -379,4 +412,8 @@ window.addEventListener("load", function() {
 			}
 		});
 	}
+
+	$('#donation_id').select2({
+		placeholder: 'Select an option'
+	});
 });

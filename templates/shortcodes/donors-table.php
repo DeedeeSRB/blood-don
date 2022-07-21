@@ -40,7 +40,11 @@
                     <div class="col col-6" data-label="Email"><?php echo $data->email ?></div>
                     <div class="col col-7" data-label="Address"><?php echo $data->address ?></div>
                     <div class="col col-8" data-label="Delete">
-                        <button style="width: 30px; padding: 0px" name="delete_donor" id="delete_donor" value="<?php echo $data->id ?>" onclick="delete_donor(this)">X</button>
+                    <?php 
+                        $nonce = wp_create_nonce("delete_donor_nonce");
+                        $id = $data->id;
+                        echo '<button style="width: 30px; padding: 0px" name="delete_donor" id="delete_donor" data-nonce="' . $nonce . '" value="' . $id . '" onclick="delete_donor(this)">X</button>';
+                    ?>
                     </div>
                 </li>
                 <?php

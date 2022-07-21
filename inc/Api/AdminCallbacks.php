@@ -67,20 +67,17 @@ class AdminCallbacks
 
 	public static function bloodDonorBloodGroup( $args )
 	{
-		?>
-		<select id="<?php echo esc_attr( $args['label_for'] ); ?>"
-				name="<?php echo esc_attr( $args['label_for'] ); ?>" required>
-			<option value="" selected disabled>Select</option>
-			<option value="A+">A+</option>
-			<option value="A-">A-</option>
-			<option value="B+">B+</option>
-			<option value="B-">B-</option>
-			<option value="AB+">AB+</option>
-			<option value="AB-">AB-</option>
-			<option value="O+">O+</option>
-			<option value="O-">O-</option>
-		</select>
-		<?php
+		echo '<select id="' . esc_attr( $args["label_for"] ) . '" name="' . esc_attr( $args["label_for"] ) . '" required>';
+			echo '<option value="" selected disabled>Select</option>';
+			echo '<option value="A+">A+</option>';
+			echo '<option value="A-">A-</option>';
+			echo '<option value="B+">B+</option>';
+			echo '<option value="B-">B-</option>';
+			echo '<option value="AB+">AB+</option>';
+			echo '<option value="AB-">AB-</option>';
+			echo '<option value="O+">O+</option>';
+			echo '<option value="O-">O-</option>';
+		echo '</select>';
 
 		$count = count(AdminCallbacks::$donors_errors['blood_group']);
 		if ( $count > 0 ) {

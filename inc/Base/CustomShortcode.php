@@ -6,7 +6,9 @@ namespace Inc\Base;
 
 class CustomShortcode
 {
-    public function register() {
+    public static function register() {
+        add_shortcode( 'bd-page-restricted', array( 'Inc\Base\CustomShortcode', 'pageRestricted' ) );
+
         add_shortcode( 'donors-table', array( 'Inc\Base\CustomShortcode', 'donorsTableShortcode' ) );
         add_shortcode( 'add-donor', array( 'Inc\Base\CustomShortcode', 'addDonorShortcode' ) );
         add_shortcode( 'update-donor', array( 'Inc\Base\CustomShortcode', 'updateDonorShortcode' ) );
@@ -15,27 +17,31 @@ class CustomShortcode
         add_shortcode( 'update-donation', array( 'Inc\Base\CustomShortcode', 'updateDonationsShortcode' ) );
     }
 
-    static function donorsTableShortcode() {
+    public static function pageRestricted() {
+        include BD_PLUGIN_PATH . 'templates/shortcodes/bd-page-restricted.php';
+    }
+
+    public static function donorsTableShortcode() {
         include BD_PLUGIN_PATH . 'templates/shortcodes/donors-table.php';
     }
 
-    static function addDonorShortcode() {
+    public static function addDonorShortcode() {
         include BD_PLUGIN_PATH . 'templates/shortcodes/add-donor.php';
     }
 
-    static function updateDonorShortcode() {
+    public static function updateDonorShortcode() {
         include BD_PLUGIN_PATH . 'templates/shortcodes/update-donor.php';
     }
 
-    static function donationsTableShortcode() {
+    public static function donationsTableShortcode() {
         include BD_PLUGIN_PATH . 'templates/shortcodes/donations-table.php';
     }
 
-    static function addDonationsShortcode() {
+    public static function addDonationsShortcode() {
         include BD_PLUGIN_PATH . 'templates/shortcodes/add-donation.php';
     }
 
-    static function updateDonationsShortcode() {
+    public static function updateDonationsShortcode() {
         include BD_PLUGIN_PATH . 'templates/shortcodes/update-donation.php';
     }
 }

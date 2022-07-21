@@ -36,7 +36,11 @@
                     <div class="col col-10" data-label="Time"><?php echo $data->time ?></div>
                     <div class="col col-11" data-label="Status"><?php echo $data->status ?></div>
                     <div class="col col-8" data-label="Delete">
-                        <button style="width: 30px; padding: 0px" name="delete_donor" id="delete_donor" value="<?php echo $data->id ?>" onclick="delete_donation(this)">X</button>
+                        <?php 
+                            $nonce = wp_create_nonce("delete_donation_nonce");
+                            $id = $data->id;
+                            echo '<button style="width: 30px; padding: 0px" data-nonce="' . $nonce . '" name="delete_donation" id="delete_donation" value="' . $id . '" onclick="delete_donation(this)">X</button>';
+                        ?>
                     </div>
                 </li>
                 <?php

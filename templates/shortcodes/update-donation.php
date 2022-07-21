@@ -3,7 +3,22 @@
         <div id="update_donation_response_div"></div>
         <div class="input-box">
             <label for="donation_id">ID: </label>
-            <input type="text" class="input-field" id="donation_id" name="donation_id" maxlength="45" required>
+            <select id="donation_id" name="donation_id" class="input-field" required>
+                <option value="" selected disabled></option>
+                <?php 
+                    global $wpdb;
+                    $tablename_donations = $wpdb->prefix . 'donations'; 
+                    $query = "SELECT * FROM $tablename_donations";
+
+                    $result = $wpdb->get_results( $query );
+                    
+                    foreach ( $result as $data ) {
+                        ?>
+                            <option value="<?php echo $data->id ?>"><?php echo $data->id . ' ' . $data->time ?></option>
+                        <?php
+                    }
+                ?>
+            </select>
         </div>
         <div class="input-box">
             <label for="ud_donor_id">Donor ID: </label>
@@ -27,6 +42,9 @@
                 <option value="Planned">Planned</option>
             </select>
         </div>
-        <input type="submit" name="update_donation_submit" id="update_donation_submit" value="Update" onclick="submit_update_donation_form()">
+        <?php 
+            $nonce = wp_create_nonce("update_donation_nonce");
+            echo '<input type="submit" name="update_donation_submit" id="update_donation_submit" data-nonce="' . $nonce . '" value="Update" onclick="submit_update_donation_form(this)">';
+        ?>
     </form>
 </div>

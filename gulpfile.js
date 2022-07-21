@@ -95,8 +95,7 @@ function watch() {
 	gulp.watch( styleWatch, gulp.series( css, reload ) ); 
 	gulp.watch( jsWatch, gulp.series( js, reload ) ); 
 	gulp.watch( phpWatch, reload ); 
-	gulp.src( jsURL + 'myscript.min.js')
-		.pipe( notify({ message: 'Gulp is Watching, Happy Coding!' }) );
+	gulp.src( jsURL + 'myscript.min.js');
 }
 
  gulp.task( "css", css );

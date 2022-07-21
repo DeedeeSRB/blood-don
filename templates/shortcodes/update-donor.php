@@ -1,9 +1,25 @@
 <div class="donor-form">
     <form name="update_donor_form" id="update_donor_form" onsubmit="return false">
         <div id="update_donor_response_div"></div>
+        
         <div class="input-box">
-            <label for="ud_id">ID: </label>
-            <input type="text" class="input-field" id="ud_id" name="ud_id" maxlength="45" required>
+            <label for="ud_id">Donor: </label>
+            <select id="ud_id" name="ud_id" class="input-field" required>
+                <option value="" selected disabled></option>
+                <?php 
+                    global $wpdb;
+                    $tablename_donors = $wpdb->prefix . 'donors'; 
+                    $query = "SELECT * FROM $tablename_donors";
+
+                    $result = $wpdb->get_results( $query );
+                    
+                    foreach ( $result as $data ) {
+                        ?>
+                            <option value="<?php echo $data->id ?>"><?php echo $data->first_name . ' ' . $data->last_name ?></option>
+                        <?php
+                    }
+                ?>
+            </select>
         </div>
         <div class="input-box">
             <label for="ud_first_name">First Name: </label>
@@ -40,6 +56,9 @@
             <label for="ud_address">Address: </label>
             <textarea class="input-field" id="ud_address" name="ud_address" placeholder="Over there at that street" maxlength="100"></textarea>
         </div>
-        <input type="submit" name="update_donor_submit" id="update_donor_submit" value="Update" onclick="submit_update_donor_form()">
+        <?php 
+            $nonce = wp_create_nonce("update_donor_nonce");
+            echo '<input type="submit" name="update_donor_submit" id="update_donor_submit" data-nonce="' . $nonce . '" value="Update" onclick="submit_update_donor_form(this)">';
+        ?>
     </form>
 </div>

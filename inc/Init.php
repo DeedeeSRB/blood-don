@@ -17,6 +17,7 @@ final class Init
 			Base\Enqueue::class,
             Base\SettingsLink::class,
 			Base\CustomShortcode::class,
+			Base\AjaxManager::class,
 		];
 	}
 

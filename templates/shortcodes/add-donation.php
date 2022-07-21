@@ -23,6 +23,9 @@
                 <option value="Planned">Planned</option>
             </select>
         </div>
-        <input type="submit" name="donation_submit" id="donation_submit" value="Submit" onclick="submit_add_donation_form()">
+        <?php 
+            $nonce = wp_create_nonce("add_donation_nonce");
+            echo '<input type="submit" name="donation_submit" id="donation_submit" data-nonce="' . $nonce . '" value="Submit" onclick="submit_add_donation_form(this)">';
+        ?>
     </form>
 </div>
