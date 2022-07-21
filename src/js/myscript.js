@@ -1,16 +1,36 @@
 //// LOGIN USER ////
 function submit_bd_login_form(button) 
 {
-	if ( !document.forms['bd-login-form'].reportValidity() ) {
-		$("#bd-login-alert-box").show();
-		$("#bd-login-alert-box").html('<div class="fs-5">Please fill out all the required fields!</div>');
-		$("#bd-login-alert-box").delay(3000).fadeOut(500, function() { $(this).hide(); });
-		return;
-	}
+	if ( !document.forms['bd_login_form'].reportValidity() ) return;
 
+	var fd = new FormData();
+
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "bd_login");
+	fd.append('username',$("#bd_login_username").val());
+	fd.append('password',$("#bd_login_password").val());
+
+	js_submit(fd, submit_bd_login_callback);
 
 }
 
+function submit_bd_login_callback(data) {
+	
+	var jdata = JSON.parse(data);
+	
+	var success = jdata.success;
+	var mess = jdata.message;
+
+	$("#bd_login_alert_box").show();
+	$("#bd_login_alert_box").html('<div class="fs-5">' + mess + '</div>');
+	$("#bd_login_alert_box").delay(3000).fadeOut(500, function() { $(this).hide(); });
+
+	if (success == 1 ) {
+		window.location.replace('http://localhost/wordpress');
+	}
+}
 
 //// REGISTER USER ////
 function submit_bd_register_form(button) 

@@ -3,6 +3,7 @@
  * @package  BloodDonPlugin
  */
 namespace Inc\Base;
+use PasswordHash;
 
 class AjaxManager
 {
@@ -10,6 +11,9 @@ class AjaxManager
 	{
         add_action("wp_ajax_bd_register", array( 'Inc\Base\AjaxManager' , 'bd_register' ) );
         add_action("wp_ajax_nopriv_bd_register", array( 'Inc\Base\AjaxManager' , 'bd_register' ) );
+        
+        add_action("wp_ajax_bd_login", array( 'Inc\Base\AjaxManager' , 'bd_login' ) );
+        add_action("wp_ajax_nopriv_bd_login", array( 'Inc\Base\AjaxManager' , 'bd_login' ) );
 
         add_action("wp_ajax_add_donor", array( 'Inc\Base\AjaxManager' , 'add_donor' ) );
         add_action("wp_ajax_get_donor", array( 'Inc\Base\AjaxManager' , 'get_donor' ) );
@@ -49,11 +53,6 @@ class AjaxManager
             exit( json_encode( $return ) );
         }  
 
-        $return = [];
-        $return['success'] = 1;
-        $return['message'] = 'Donor added successfully!';
-		$return['color'] = '#53ec86';
-
         $username = sanitize_text_field($_POST['username']);
         $first_name = sanitize_text_field($_POST['first_name']);
 		$last_name = sanitize_text_field($_POST['last_name']);
@@ -76,10 +75,8 @@ class AjaxManager
             exit( json_encode( $return ) );
         }
 
-        $hashedPassword = wp_hash_password( $password );
-
         $userdata = array(
-            'user_pass'             => $hashedPassword,   
+            'user_pass'             => $password,   
             'user_login'            => $username,   
             'user_email'            => $email,   
             'first_name'            => $first_name,   
@@ -106,6 +103,51 @@ class AjaxManager
         $return['success'] = 1;
         $return['message'] = 'Registered successfuly!';
         exit( json_encode( $return ) );
+    }
+
+    public static function bd_login() {
+
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_login_form_nonce")) {
+            $return = [];
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            exit( json_encode( $return ) );
+        }  
+
+        $username = sanitize_text_field($_POST['username']);
+		$password = sanitize_text_field($_POST['password']);
+
+        if ( $username == '' || $password == '' ) {
+            $return['success'] = 2;
+            $return['message'] = 'Please fill out all the required fields!';
+            exit( json_encode( $return ) );
+        }
+
+        $user = get_user_by( 'login', $username );
+
+        if ( $user === false ) {
+            $return['success'] = 2;
+            $return['message'] = 'The username or password is wrong!';
+            exit( json_encode( $return ) );
+        }
+
+        require_once ABSPATH . WPINC . '/class-phpass.php';
+        $wp_hasher = new PasswordHash( 8, true );
+
+        if( !$wp_hasher->CheckPassword( $password, $user->get( 'user_pass' ) ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'The username or password is wrong!';
+            exit( json_encode( $return ) );
+        } 
+
+        wp_clear_auth_cookie();
+        wp_set_current_user( $user->get( 'id' ) );
+        wp_set_auth_cookie( $user->get( 'id' ) );
+
+        $return['success'] = 1;
+        $return['message'] = 'Logged in successfuly';
+        exit( json_encode( $return ) );
+
     }
 
     public static function add_donor() 
