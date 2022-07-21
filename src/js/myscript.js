@@ -66,7 +66,7 @@ function submit_bd_register_callback(data)
 	$("#bd_register_alert_box").delay(3000).fadeOut(500, function() { $(this).hide(); });
 
 	if (success == 1 ) {
-		window.location.replace('http://localhost/wordpress/login');
+		window.location.replace('http://localhost/wordpress');
 	}
 }
 

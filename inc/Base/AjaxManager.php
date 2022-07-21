@@ -36,12 +36,16 @@ class AjaxManager
 	}
 
     public static function bd_register() {
+        
+        // wp_delete_user( 2 );
+        // $return['success'] = 2;
+        // $return['message'] = 'Deleted successfuly!';
+        // exit( json_encode( $return ) );
 
         if ( !wp_verify_nonce( $_POST['nonce'], "bd_register_form_nonce")) {
             $return = [];
             $return['success'] = 2;
             $return['message'] = 'Nonce Error';
-            $return['color'] = '#f56565';
             exit( json_encode( $return ) );
         }  
 
@@ -61,7 +65,6 @@ class AjaxManager
         if ( $first_name == '' || $last_name == '' || $username == '' || $email == '' || $password == '' ) {
             $return['success'] = 2;
             $return['message'] = 'Please fill out all the required fields!';
-            $return['color'] = '#f56565';
             exit( json_encode( $return ) );
         }
 
@@ -70,13 +73,38 @@ class AjaxManager
         if ( $user !== false ) {
             $return['success'] = 2;
             $return['message'] = 'The username ' . $user->user_login . ' with ID ' . $user->ID . ' already exists!';
-            $return['color'] = '#f56565';
             exit( json_encode( $return ) );
         }
 
+        $hashedPassword = wp_hash_password( $password );
+
+        $userdata = array(
+            'user_pass'             => $hashedPassword,   
+            'user_login'            => $username,   
+            'user_email'            => $email,   
+            'first_name'            => $first_name,   
+            'last_name'             => $last_name,   
+            'meta_input'            => array(
+                'phone_number'      => $phone_number, 
+                'address'           => $address,
+            ),
+        );
+
+        $user_id = wp_insert_user( $userdata ) ;
+ 
+        
+        if ( is_wp_error( $user_id ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'An error occured when registering!';
+            exit( json_encode( $return ) );
+        }
+
+        wp_clear_auth_cookie();
+        wp_set_current_user( $user_id );
+        wp_set_auth_cookie( $user_id );
+
         $return['success'] = 1;
         $return['message'] = 'Registered successfuly!';
-        $return['color'] = '#f56565';
         exit( json_encode( $return ) );
     }
 
@@ -630,8 +658,11 @@ class AjaxManager
     }
 
     public static function please_login() {
-        wp_safe_redirect( 'http://localhost/wordpress/login' );
-        exit;
+        $return = [];
+        $return['success'] = 3;
+        $return['message'] = 'Redirect';
+        $return['color'] = '#f56565';
+        exit( json_encode( $return ) );
     }
 
 }
