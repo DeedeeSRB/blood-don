@@ -8,6 +8,9 @@ class AjaxManager
 {
 	public static function register() 
 	{
+        add_action("wp_ajax_bd_register", array( 'Inc\Base\AjaxManager' , 'bd_register' ) );
+        add_action("wp_ajax_nopriv_bd_register", array( 'Inc\Base\AjaxManager' , 'bd_register' ) );
+
         add_action("wp_ajax_add_donor", array( 'Inc\Base\AjaxManager' , 'add_donor' ) );
         add_action("wp_ajax_get_donor", array( 'Inc\Base\AjaxManager' , 'get_donor' ) );
         add_action("wp_ajax_update_donor", array( 'Inc\Base\AjaxManager' , 'update_donor' ) );
@@ -31,6 +34,51 @@ class AjaxManager
         add_action("wp_ajax_nopriv_delete_donation", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
         
 	}
+
+    public static function bd_register() {
+
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_register_form_nonce")) {
+            $return = [];
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            $return['color'] = '#f56565';
+            exit( json_encode( $return ) );
+        }  
+
+        $return = [];
+        $return['success'] = 1;
+        $return['message'] = 'Donor added successfully!';
+		$return['color'] = '#53ec86';
+
+        $username = sanitize_text_field($_POST['username']);
+        $first_name = sanitize_text_field($_POST['first_name']);
+		$last_name = sanitize_text_field($_POST['last_name']);
+        $email = sanitize_email($_POST['email']);
+		$phone_number = sanitize_text_field($_POST['phone_number']);
+		$address = sanitize_textarea_field($_POST['address']);
+		$password = sanitize_text_field($_POST['password']);
+
+        if ( $first_name == '' || $last_name == '' || $username == '' || $email == '' || $password == '' ) {
+            $return['success'] = 2;
+            $return['message'] = 'Please fill out all the required fields!';
+            $return['color'] = '#f56565';
+            exit( json_encode( $return ) );
+        }
+
+        $user = get_user_by( 'login', $username );
+
+        if ( $user !== false ) {
+            $return['success'] = 2;
+            $return['message'] = 'The username ' . $user->user_login . ' with ID ' . $user->ID . ' already exists!';
+            $return['color'] = '#f56565';
+            exit( json_encode( $return ) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'Registered successfuly!';
+        $return['color'] = '#f56565';
+        exit( json_encode( $return ) );
+    }
 
     public static function add_donor() 
     {
@@ -582,11 +630,7 @@ class AjaxManager
     }
 
     public static function please_login() {
-        $return = [];
-        $return['message'] = "You must be logged in";
-        $return['success'] = 2;
-        $return['color'] = '#f56565';
-        echo json_encode($return);
+        wp_safe_redirect( 'http://localhost/wordpress/login' );
         exit;
     }
 

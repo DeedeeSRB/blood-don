@@ -1,3 +1,75 @@
+//// LOGIN USER ////
+function submit_bd_login_form(button) 
+{
+	if ( !document.forms['bd-login-form'].reportValidity() ) {
+		$("#bd-login-alert-box").show();
+		$("#bd-login-alert-box").html('<div class="fs-5">Please fill out all the required fields!</div>');
+		$("#bd-login-alert-box").delay(3000).fadeOut(500, function() { $(this).hide(); });
+		return;
+	}
+
+
+}
+
+
+//// REGISTER USER ////
+function submit_bd_register_form(button) 
+{
+	if ( !document.forms['bd_register_form'].reportValidity() ) return;
+	
+	phone_number = $("#bd_register_phone_number").val();
+	var rx = new RegExp(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/);
+	var phone_verified = phone_number.length == 0 || ( phone_number.length > 9 && phone_number.match(rx) ) ;
+	
+	if ( !phone_verified ) {
+		$("#bd_register_alert_box").show();
+		$("#bd_register_alert_box").html('<div class="fs-5">Please enter a valid phone number!</div>');
+		$("#bd_register_alert_box").delay(3000).fadeOut(500, function() { $(this).hide(); });
+		return;
+	} 
+
+	password = $("#bd_register_password").val();
+	if ( password !== $("#bd_register_password_confirm").val() ) {
+		$("#bd_register_alert_box").show();
+		$("#bd_register_alert_box").html('<div class="fs-5">Passwords don\'t match!</div>');
+		$("#bd_register_alert_box").delay(3000).fadeOut(500, function() { $(this).hide(); });
+		return;
+	} 
+
+	var fd = new FormData();
+
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "bd_register");
+	fd.append('username',$("#bd_register_username").val());
+	fd.append('first_name',$("#bd_register_first_name").val());
+	fd.append('last_name',$("#bd_register_last_name").val());
+	fd.append('phone_number',phone_number);
+	fd.append('email',$("#bd_register_email").val());
+	fd.append('address',$("#bd_register_address").val());
+	fd.append('password',password);
+
+	js_submit(fd, submit_bd_register_callback);
+}
+
+function submit_bd_register_callback(data) 
+{
+	var jdata = JSON.parse(data);
+	
+	var success = jdata.success;
+	var mess = jdata.message;
+	var color = jdata.color;
+
+	$("#bd_register_alert_box").show();
+	$("#bd_register_alert_box").html('<div class="fs-5">' + mess + '</div>');
+	$("#bd_register_alert_box").delay(3000).fadeOut(500, function() { $(this).hide(); });
+
+	if (success == 1 ) {
+		window.location.replace('http://localhost/wordpress/login');
+	}
+}
+
 
 //// ADD DONOR ////
 function submit_add_donor_form(button)
@@ -391,6 +463,8 @@ window.addEventListener("load", function() {
 
 	}
 
+	
+
 	if ($("#ud_id").length) {
 		$("#ud_id").change(function() {
 			if ($("#ud_id").val() != "") {
@@ -416,4 +490,6 @@ window.addEventListener("load", function() {
 	$('#donation_id').select2({
 		placeholder: 'Select an option'
 	});
+
+	
 });

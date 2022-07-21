@@ -43,7 +43,7 @@
                     <?php 
                         $nonce = wp_create_nonce("delete_donor_nonce");
                         $id = $data->id;
-                        echo '<button style="width: 30px; padding: 0px" name="delete_donor" id="delete_donor" data-nonce="' . $nonce . '" value="' . $id . '" onclick="delete_donor(this)">X</button>';
+                        echo '<button style="width: 30px; height: 30px; padding: 0px" name="delete_donor" id="delete_donor" data-nonce="' . $nonce . '" value="' . $id . '" onclick="delete_donor(this)">X</button>';
                     ?>
                     </div>
                 </li>

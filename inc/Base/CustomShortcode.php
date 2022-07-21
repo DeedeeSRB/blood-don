@@ -9,6 +9,9 @@ class CustomShortcode
     public static function register() {
         add_shortcode( 'bd-page-restricted', array( 'Inc\Base\CustomShortcode', 'pageRestricted' ) );
 
+        add_shortcode( 'bd-login-page', array( 'Inc\Base\CustomShortcode', 'loginPage' ) );
+        add_shortcode( 'bd-register-page', array( 'Inc\Base\CustomShortcode', 'registerPage' ) );
+
         add_shortcode( 'donors-table', array( 'Inc\Base\CustomShortcode', 'donorsTableShortcode' ) );
         add_shortcode( 'add-donor', array( 'Inc\Base\CustomShortcode', 'addDonorShortcode' ) );
         add_shortcode( 'update-donor', array( 'Inc\Base\CustomShortcode', 'updateDonorShortcode' ) );
@@ -19,6 +22,14 @@ class CustomShortcode
 
     public static function pageRestricted() {
         include BD_PLUGIN_PATH . 'templates/shortcodes/bd-page-restricted.php';
+    }
+
+    public static function loginPage() {
+        include BD_PLUGIN_PATH . 'templates/shortcodes/bd-login-page.php';
+    }
+
+    public static function registerPage() {
+        include BD_PLUGIN_PATH . 'templates/shortcodes/bd-register-page.php';
     }
 
     public static function donorsTableShortcode() {
