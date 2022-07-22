@@ -46,7 +46,7 @@ else {
 <div>
     <div name="bd_home_page_alert_box" id="bd_home_page_alert_box" class="alert alert-danger alert-dismissible collapse"></div>
     <div class="row">
-        <div class="col fs-3">To-Be-Accepted Donations</div>
+        <div class="col fs-3">To Be Accepted Donations</div>
         <button type="button" class="col-auto btn btn-success px-5" data-bs-toggle="modal" data-bs-target="#donateModal">Donate</button>
     </div>
 

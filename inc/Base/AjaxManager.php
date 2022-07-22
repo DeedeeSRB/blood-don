@@ -33,6 +33,9 @@ class AjaxManager
         add_action("wp_ajax_bd_edit_donation", array( 'Inc\Base\AjaxManager' , 'bd_edit_donation' ) );
         add_action("wp_ajax_nopriv_bd_edit_donation", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
 
+        add_action("wp_ajax_bd_create_donation", array( 'Inc\Base\AjaxManager' , 'bd_create_donation' ) );
+        add_action("wp_ajax_nopriv_bd_create_donation", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
+
         add_action("wp_ajax_add_donor", array( 'Inc\Base\AjaxManager' , 'add_donor' ) );
         add_action("wp_ajax_get_donor", array( 'Inc\Base\AjaxManager' , 'get_donor' ) );
         add_action("wp_ajax_update_donor", array( 'Inc\Base\AjaxManager' , 'update_donor' ) );
@@ -408,15 +411,18 @@ class AjaxManager
         }
 
         if ( $donor_id != -1 ) {
-            $tablename_donors = $wpdb->prefix . 'donors'; 
-
-            $query = "SELECT * FROM $tablename_donors WHERE id = $donor_id";
-    
-            $result = $wpdb->get_row( $query );
+            $result = get_userdata( $donor_id );
     
             if ( $result === null ) {
                 $return['success'] = 2;
                 $return['message'] = 'Couldn\'t find donor with id ' . $donor_id;
+                exit( json_encode($return) );
+            }
+
+            $is_donor = $result->get('is_donor');
+            if ( $is_donor == false ) {
+                $return['success'] = 2;
+                $return['message'] = 'User with id ' . $donor_id . ' is not a donor!';
                 exit( json_encode($return) );
             }
         }
@@ -478,6 +484,93 @@ class AjaxManager
         $return['success'] = 1;
         $return['message'] = 'Updated donor with id ' . $id_to_update . ' successfuly';
         exit( json_encode($return) );
+    }
+
+    public static function bd_create_donation() {
+
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_create_donation_nonce" ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            exit( json_encode( $return ) );
+        }  
+
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            exit( json_encode( $return ) );
+        } 
+
+		$donor_id = sanitize_text_field($_POST['donor_id']);
+		$amount_ml = sanitize_text_field($_POST['amount_ml']);
+		$time = $_POST['time'];
+        $status = sanitize_text_field($_POST['status']);
+
+        
+        $result = get_userdata( $donor_id );
+
+        if ( $result === null ) {
+            $return['success'] = 2;
+            $return['message'] = 'Couldn\'t find donor with id ' . $donor_id;
+            exit( json_encode($return) );
+        }
+
+        $is_donor = $result->get('is_donor');
+        if ( $is_donor == false ) {
+            $return['success'] = 2;
+            $return['message'] = 'User with id ' . $donor_id . ' is not a donor!';
+            exit( json_encode($return) );
+        }
+        
+
+        if ( $donor_id == '' || $amount_ml == '' || $time == '' || $status == '') {
+            $return['success'] = 2;
+            $return['message'] = 'Please fill out all the required fields!';
+            exit( json_encode($return) );
+        }
+
+        if ( !is_numeric( $amount_ml ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'Please enter a numeric amount!';
+            exit( json_encode($return) );
+        }
+
+        $status_avi = array( 'Completed', 'In progress', 'Planned', 'To Be Accepted' );
+        if ( !in_array( $status, $status_avi ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'Please select a valid status!';
+            exit( json_encode($return) );
+        }
+        
+        global $wpdb;
+        $tablename_donations = $wpdb->prefix . 'donations'; 
+
+        $result = $wpdb->insert( 
+            $tablename_donations, 
+            array( 
+                'donor_id' => $donor_id, 
+                'amount_ml' => $amount_ml, 
+                'time' => $time, 
+                'status' => $status, 
+            ), 
+            array( 
+                '%d', 
+                '%d',
+                '%s', 
+                '%s',
+            ) 
+        );
+
+        if ( $result == false ) {
+            $return['success'] = 2;
+            $return['message'] = 'An error occured when adding donation!';
+            exit( json_encode($return) );
+        }
+        
+        $return['success'] = 1;
+        $return['message'] = 'Donation added successfully!';
+        exit( json_encode($return) );
+        
     }
 
     public static function add_donor() 

@@ -322,12 +322,48 @@ function submit_bd_edit_donation_callback(data) {
 		$("#bd_to_be_accepted_donations_table").load(location.href + " #bd_to_be_accepted_donations_table");
 		$("#bd_admin_donation_response_div").show();
 		$("#bd_admin_donation_response_div").html('<div class="fs-6">' + mess + '</div>');
-		$("#bd_admin_donation_response_div").delay(2000).fadeOut(500, function() { $(this).remove(); });
+		$("#bd_admin_donation_response_div").delay(2000).fadeOut(500, function() { $(this).hide(); });
 	}
 	else if ( success == 2 ) {
 		alert(mess);
 	}
 	else if (success == 3 ) {
+		window.location.replace('http://localhost/wordpress/login');
+	}
+}
+
+//// CREATE DONATION ////
+function bd_create_donation_submit_from(button) {
+
+	if ( !document.forms['bd_create_donation_form'].reportValidity() ) return;
+
+	var fd = new FormData();
+	
+	nonce = $(button).attr("data-nonce");
+
+	fd.append('nonce', nonce);
+	fd.append('action', "bd_create_donation");
+	fd.append('donor_id',$("#bd_create_donation_donor_id").val());
+	fd.append('amount_ml',$("#bd_create_donation_amount_ml").val());
+	fd.append('time',$("#bd_create_donation_time").val());
+	fd.append('status',$("#bd_create_donation_status").val());
+
+	js_submit(fd, submit_bd_create_donation_callback);
+}
+
+function submit_bd_create_donation_callback(data) {
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+	var mess = jdata.message;
+
+	$("#bd_approved_donations_table").load(location.href + " #bd_approved_donations_table");
+	$("#bd_to_be_accepted_donations_table").load(location.href + " #bd_to_be_accepted_donations_table");
+	$("#bd_admin_donation_response_div").show();
+	$("#bd_admin_donation_response_div").html('<div class="fs-6">' + mess + '</div>');
+	$("#bd_admin_donation_response_div").delay(2000).fadeOut(500, function() { $(this).hide(); });
+	
+	if (success == 3 ) {
 		window.location.replace('http://localhost/wordpress/login');
 	}
 }
@@ -752,5 +788,8 @@ window.addEventListener("load", function() {
 		placeholder: 'Select an option'
 	});
 
-	
+	$('#bd_create_donation_donor_id').select2({
+		dropdownParent: $('#createDonationModal'),
+		placeholder: 'Select a donor'
+	});
 });

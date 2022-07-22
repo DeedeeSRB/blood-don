@@ -28,10 +28,17 @@
 				</div>
 			</div>
 		</div>
+
+<!---------------------------------------- DONATIONS PAGE  -------------------------------------------------->
 		<div id="tab-2" class="tab-pane">
-			<?php $nonce_del = wp_create_nonce("bd_delete_donation_nonce"); ?>
+			<?php $nonce_del_donation = wp_create_nonce("bd_delete_donation_nonce"); ?>
 			<div name="bd_admin_donation_response_div" id="bd_admin_donation_response_div" class="alert alert-danger alert-dismissible collapse"></div>
-			<h3>To Be Accepted Donations</h3>
+			<div class="row my-3">
+				<div class="col"><h3>To Be Accepted Donations</h3></div>
+				<button type="button" class="col-auto btn btn-success px-2 mx-3" data-bs-toggle="modal" data-bs-target="#createDonationModal">Create new donation</button>
+				<button type="button" class="col-auto btn btn-warning px-2" data-bs-toggle="modal" data-bs-target="#customEditDonationModal">Edit donation</button>
+			</div>
+			<!-------------------------------------- TO BE ACCEPTED DONATIONS TABLE -------------------------------------->
 			<div id="bd_to_be_accepted_donations_table">
 				<ul class="responsive-table">
 					<li class="table-header">
@@ -85,7 +92,7 @@
 										<div class="col-auto">
 											<?php 
 												$id = $data->id;
-												echo '<button class="btn btn-danger" data-nonce="' . $nonce_del . '" name="bd_delete_donation" id="bd_delete_donation" value="' . $id . '" onclick="bd_delete_donation_submit(this)">X</button>';
+												echo '<button class="btn btn-danger" data-nonce="' . $nonce_del_donation . '" name="bd_delete_donation" id="bd_delete_donation" value="' . $id . '" onclick="bd_delete_donation_submit(this)">X</button>';
 											?>
 										</div>
 										
@@ -97,6 +104,7 @@
 					?>
 				</ul>
 			</div>
+			<!-------------------------------------- ACCEPTED DONATIONS TABLE -------------------------------------->
 			<h3>Accepted Donations</h3>
 			<div id="bd_approved_donations_table">
 				<ul class="responsive-table">
@@ -150,7 +158,7 @@
 										<div class="col-auto">
 											<?php 
 												$id = $data->id;
-												echo '<button class="btn btn-danger" data-nonce="' . $nonce_del . '" name="bd_delete_donation" id="bd_delete_donation" value="' . $id . '" onclick="bd_delete_donation_submit(this)">X</button>';
+												echo '<button class="btn btn-danger" data-nonce="' . $nonce_del_donation . '" name="bd_delete_donation" id="bd_delete_donation" value="' . $id . '" onclick="bd_delete_donation_submit(this)">X</button>';
 											?>
 										</div>
 										
@@ -163,6 +171,7 @@
 				</ul>
 			</div>
 
+			<!-------------------------------------- EDIT DONATIONS MODAL -------------------------------------->
 			<div class="modal fade" id="editDonationModal" tabindex="-1" aria-labelledby="editDonationModalLabel" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
@@ -198,6 +207,65 @@
 									echo '<input class="btn btn-success" data-nonce="' . $nonce . '" name="bd_edit_donation_submit" 
 									id="bd_edit_donation_submit" onclick="bd_edit_donation_submit_from(this)" data-id=""
 									type="submit" value="Confirm Edit">';
+								?>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<!-------------------------------------- CREATE DONATIONS MODAL -------------------------------------->
+			<div class="modal fade" id="createDonationModal" aria-labelledby="createDonationModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="createDonationModalLabel">Create Donation</h5>
+							<button type="button" class="btn-close fs-4" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<form name="bd_create_donation_form" id="bd_create_donation_form" onsubmit="return false">
+								<div class="my-3">
+									<label class="form-label fs-5 w-100" for="bd_create_donation_donor_id">Donor: </label>
+									<select id="bd_create_donation_donor_id" name="bd_create_donation_donor_id" class="form-select" required>
+										<option value="" selected disabled></option>
+										<?php
+										$users = get_users( array( 'fields' => array( 'ID', 'first_name', 'last_name' ) ) );
+										foreach($users as $user){
+											$first_name = get_user_meta( $user->id, 'first_name' );
+											$last_name = get_user_meta( $user->id, 'last_name' );
+											?>
+												<option value="<?php echo $user->id ?>"><?php echo $first_name[0] ?> <?php echo $last_name[0] ?> (ID:<?php echo $user->id ?>)</option>
+											<?php
+										}
+										?>
+									</select>
+								</div>
+								<div>
+									<label class="form-label fs-5" for="bd_create_donation_amount_ml">Amount (mL): </label>
+									<input type="text" class="form-control" id="bd_create_donation_amount_ml" name="bd_create_donation_amount_ml" placeholder="200 ml" maxlength="45" required>
+								</div>
+								<div class="my-3">
+									<label class="form-label fs-5" for="bd_create_donation_time">Time: </label>
+									<input type="datetime-local" class="form-control" id="bd_create_donation_time" name="bd_create_donation_time" required>
+								</div>
+								<div>
+									<label class="form-label fs-5" for="bd_create_donation_status">Status: </label>
+									<select id="bd_create_donation_status" name="bd_create_donation_status" class="form-control" required>
+										<option value="" selected disabled>Select</option>
+										<option value="Completed">Completed</option>
+										<option value="In progress">In progress</option>
+										<option value="Planned">Planned</option>
+										<option value="To Be Accepted">To Be Accepted</option>
+									</select>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+								<?php 
+									$nonce = wp_create_nonce("bd_create_donation_nonce");
+									echo '<input class="btn btn-success" data-nonce="' . $nonce . '" name="bd_create_donation_submit" 
+									id="bd_create_donation_submit" onclick="bd_create_donation_submit_from(this)"
+									type="submit" value="Confirm Donation">';
 								?>
 							</div>
 						</form>
