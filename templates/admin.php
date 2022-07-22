@@ -2,35 +2,34 @@
 	<h1>Sadik's Plugin</h1>
 	<?php settings_errors(); ?>
 
-    <ul class="nav nav-tabs">
-		<li class="active"><a href="#tab-1">Donors Database</a></li>
-		<li><a href="#tab-2">Donations Database</a></li>
-	</ul>
-	
-	<div class="tab-content">
-		<div id="tab-1" class="tab-pane active">
-			<h3>Donors Database</h3>
-			<?php echo do_shortcode( '[donors-table]' ); ?>
-			<div style="display: inline-flex;">
-				<div>
-					<h2>Add donation</h2>
-					<form method="post" action="<?php menu_page_url( 'blood_donation_plugin' ) ?>">
-						<?php 
-							settings_fields( 'blood_don_options_group' );
-							do_settings_sections( 'blood_donation_plugin' );
-							submit_button( 'Add Donor' );
-						?>
-					</form>
-				</div>
-				<div style="margin-left: 100px;">
-					<h2>Update donor</h2>
-					<?php echo do_shortcode( '[update-donor]' ); ?>
-				</div>
+	<nav>
+		<div class="nav nav-tabs" id="nav-tab" role="tablist">
+			<button class="nav-link active" id="nav-donors-tab" data-bs-toggle="tab" data-bs-target="#nav-donors" type="button" role="tab" aria-controls="nav-donors" aria-selected="true">Donors</button>
+			<button class="nav-link" id="nav-donations-tab" data-bs-toggle="tab" data-bs-target="#nav-donations" type="button" role="tab" aria-controls="nav-donations" aria-selected="false">Donations</button>
+		</div>
+	</nav>
+	<div class="tab-content" id="nav-tabContent">
+		<div class="tab-pane fade show active" id="nav-donors" role="tabpanel" aria-labelledby="nav-donors-tab" tabindex="0">
+			<?php $nonce_del_donor = wp_create_nonce("bd_delete_donor_nonce"); ?>
+			<div name="bd_admin_donor_response_div" id="bd_admin_donor_response_div" class="alert alert-danger alert-dismissible collapse"></div>
+			<div class="row my-3">
+				<div class="col"><h3>Current Donors</h3></div>
+				<button type="button" class="col-auto btn btn-success px-2 mx-3" data-bs-toggle="modal" data-bs-target="#createDonorModal">Add new donor</button>
+				<button type="button" class="col-auto btn btn-warning px-2" data-bs-toggle="modal" data-bs-target="#customEditDonorModal">Edit donor</button>
 			</div>
+			<!-------------------------------------- DONORS TABLE -------------------------------------->
+			<?php include BD_PLUGIN_PATH . 'templates/admin/donors/bd-donors-table.php'; ?>
+
+			<!-------------------------------------- EDIT DONORS MODAL -------------------------------------->
+			<?php include BD_PLUGIN_PATH . 'templates/admin/donors/bd-edit-donors-modal.php'; ?>
+
+			<!-------------------------------------- CREATE DONORS MODAL -------------------------------------->
+			<?php include BD_PLUGIN_PATH . 'templates/admin/donors/bd-create-donors-modal.php'; ?>
+
 		</div>
 
 <!---------------------------------------- DONATIONS PAGE  -------------------------------------------------->
-		<div id="tab-2" class="tab-pane">
+		<div class="tab-pane fade" id="nav-donations" role="tabpanel" aria-labelledby="nav-donations-tab" tabindex="0">
 			<?php $nonce_del_donation = wp_create_nonce("bd_delete_donation_nonce"); ?>
 			<div name="bd_admin_donation_response_div" id="bd_admin_donation_response_div" class="alert alert-danger alert-dismissible collapse"></div>
 			<div class="row my-3">
@@ -39,242 +38,19 @@
 				<button type="button" class="col-auto btn btn-warning px-2" data-bs-toggle="modal" data-bs-target="#customEditDonationModal">Edit donation</button>
 			</div>
 			<!-------------------------------------- TO BE ACCEPTED DONATIONS TABLE -------------------------------------->
-			<div id="bd_to_be_accepted_donations_table">
-				<ul class="responsive-table">
-					<li class="table-header">
-						<div class="col col-1">ID</div>
-						<div class="col">Donor</div>
-						<div class="col">Amount (mL)</div>
-						<div class="col">Time</div>
-						<div class="col">Status</div>
-						<div class="col col-3">Manage</div>
-					</li>
-					<?php 
-						global $wpdb;
+			<?php include BD_PLUGIN_PATH . 'templates/admin/donations/bd-to-be-accepted-donations-table.php'; ?>
 
-						$tablename_donations = $wpdb->prefix . 'donations'; 
-						$query = "
-						SELECT * 
-						FROM $tablename_donations
-						WHERE status = 'To Be Accepted';";
-
-						$result = $wpdb->get_results( $query );
-						if ( count($result) == 0 ) {
-							?>
-							<li class="table-row">
-								<div class="col">There are no donations yet.</div>
-							</li>
-							<?php
-						}
-						foreach ( $result as $data ) {
-							$user = get_user_by( 'id', $data->donor_id );
-							?>
-							<div name="bd_delete_donation_response_div_<?php echo $data->id ?>" 
-								id="bd_delete_donation_response_div_<?php echo $data->id ?>"
-								class="alert alert-success alert-dismissible collapse"></div>
-							<li class="table-row" id="bd_delete_donation_<?php echo $data->id ?>">
-								<div class="col col-1" data-label="ID"><?php echo $data->id ?></div>
-								<div class="col" data-label="Donor">
-									<?php echo $user->first_name ?> <?php echo $user->last_name ?> (ID:<?php echo $data->donor_id ?>)
-								</div>
-								<div class="col" data-label="Amount (mL)"><?php echo $data->amount_ml ?></div>
-								<div class="col" data-label="Time"><?php echo $data->time ?></div>
-								<div class="col" data-label="Status"><?php echo $data->status ?></div>
-								<div class="col col-3" data-label="Manage">
-									<div class="row justify-content-center">
-										<div class="col-auto">
-											<?php 
-												$nonce = wp_create_nonce("bd_approve_tba_donation_nonce");
-												$id = $data->id;
-												echo '<button class="btn btn-success" data-nonce="' . $nonce . '" name="bd_approve_tba_donation" id="bd_approve_tba_donation" value="' . $id . '" onclick="bd_approve_tba_donation_submit(this)">✓</button>';
-											?>
-										</div>
-										<div class="col-auto">
-											<?php 
-												$id = $data->id;
-												echo '<button class="btn btn-danger" data-nonce="' . $nonce_del_donation . '" name="bd_delete_donation" id="bd_delete_donation" value="' . $id . '" onclick="bd_delete_donation_submit(this)">X</button>';
-											?>
-										</div>
-										
-									</div>
-								</div>
-							</li>
-							<?php
-						}
-					?>
-				</ul>
-			</div>
-			<!-------------------------------------- ACCEPTED DONATIONS TABLE -------------------------------------->
 			<h3>Accepted Donations</h3>
-			<div id="bd_approved_donations_table">
-				<ul class="responsive-table">
-					<li class="table-header">
-						<div class="col col-1">ID</div>
-						<div class="col">Donor</div>
-						<div class="col">Amount (mL)</div>
-						<div class="col">Time</div>
-						<div class="col">Status</div>
-						<div class="col col-3">Manage</div>
-					</li>
-					<?php 
-						global $wpdb;
-
-						$tablename_donations = $wpdb->prefix . 'donations'; 
-						$query = "
-						SELECT * 
-						FROM $tablename_donations
-						WHERE status <> 'To Be Accepted';";
-
-						$result = $wpdb->get_results( $query );
-						if ( count($result) == 0 ) {
-							?>
-							<li class="table-row">
-								<div class="col">There are no donations yet.</div>
-							</li>
-							<?php
-						}
-						foreach ( $result as $data ) {
-							?>
-							<div name="bd_delete_donation_response_div_<?php echo $data->id ?>" 
-								id="bd_delete_donation_response_div_<?php echo $data->id ?>"
-								class="alert alert-success alert-dismissible collapse"></div>
-							<li class="table-row" id="bd_delete_donation_<?php echo $data->id ?>">
-								<div class="col col-1" data-label="ID"><?php echo $data->id ?></div>
-								<div class="col" data-label="Donor">
-									<?php echo $user->first_name ?> <?php echo $user->last_name ?> (ID:<?php echo $data->donor_id ?>)
-								</div>
-								<div class="col" data-label="Amount (mL)"><?php echo $data->amount_ml ?></div>
-								<div class="col" data-label="Time"><?php echo $data->time ?></div>
-								<div class="col" data-label="Status"><?php echo $data->status ?></div>
-								<div class="col col-3" data-label="Manage">
-									<div class="row justify-content-center">
-										<div class="col-auto">
-											<button class="btn btn-warning" data-bs-toggle="modal" data-status="<?php echo $data->status ?>"
-											data-amount="<?php echo $data->amount_ml ?>" data-time="<?php echo $data->time ?>"
-											data-id="<?php echo $data->id ?>"
-											data-bs-target="#editDonationModal" onclick="bd_set_edit_donation_form(this)">
-											<i class="fas fa-pen text-light"></i></button>
-										</div>
-										<div class="col-auto">
-											<?php 
-												$id = $data->id;
-												echo '<button class="btn btn-danger" data-nonce="' . $nonce_del_donation . '" name="bd_delete_donation" id="bd_delete_donation" value="' . $id . '" onclick="bd_delete_donation_submit(this)">X</button>';
-											?>
-										</div>
-										
-									</div>
-								</div>
-							</li>
-							<?php
-						}
-					?>
-				</ul>
-			</div>
+			<!-------------------------------------- ACCEPTED DONATIONS TABLE -------------------------------------->
+			<?php include BD_PLUGIN_PATH . 'templates/admin/donations/bd-accepted-donations-table.php'; ?>
 
 			<!-------------------------------------- EDIT DONATIONS MODAL -------------------------------------->
-			<div class="modal fade" id="editDonationModal" tabindex="-1" aria-labelledby="editDonationModalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="editDonationModalLabel">Edit Donation</h5>
-							<button type="button" class="btn-close fs-4" data-bs-dismiss="modal" aria-label="Close"></button>
-						</div>
-						<div class="modal-body">
-							<form name="bd_edit_donation_form" id="bd_edit_donation_form" onsubmit="return false">
-								<div>
-									<label class="form-label fs-5" for="bd_edit_donation_amount_ml">Amount (mL): </label>
-									<input type="text" class="form-control" id="bd_edit_donation_amount_ml" name="bd_edit_donation_amount_ml" placeholder="200 ml" maxlength="45" required>
-								</div>
-								<div class="my-3">
-									<label class="form-label fs-5" for="bd_edit_donation_time">Time: </label>
-									<input type="datetime-local" class="form-control" id="bd_edit_donation_time" name="bd_edit_donation_time" required>
-								</div>
-								<div>
-									<label class="form-label fs-5" for="bd_edit_donation_status">Status: </label>
-									<select id="bd_edit_donation_status" name="bd_edit_donation_status" class="form-control" required>
-										<option value="" selected disabled>Select</option>
-										<option value="Completed">Completed</option>
-										<option value="In progress">In progress</option>
-										<option value="Planned">Planned</option>
-										<option value="To Be Accepted">To Be Accepted</option>
-									</select>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-								<?php 
-									$nonce = wp_create_nonce("bd_edit_donation_nonce");
-									echo '<input class="btn btn-success" data-nonce="' . $nonce . '" name="bd_edit_donation_submit" 
-									id="bd_edit_donation_submit" onclick="bd_edit_donation_submit_from(this)" data-id=""
-									type="submit" value="Confirm Edit">';
-								?>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
+			<?php include BD_PLUGIN_PATH . 'templates/admin/donations/bd-edit-donations-modal.php'; ?>
 
 			<!-------------------------------------- CREATE DONATIONS MODAL -------------------------------------->
-			<div class="modal fade" id="createDonationModal" aria-labelledby="createDonationModalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="createDonationModalLabel">Create Donation</h5>
-							<button type="button" class="btn-close fs-4" data-bs-dismiss="modal" aria-label="Close"></button>
-						</div>
-						<div class="modal-body">
-							<form name="bd_create_donation_form" id="bd_create_donation_form" onsubmit="return false">
-								<div class="my-3">
-									<label class="form-label fs-5 w-100" for="bd_create_donation_donor_id">Donor: </label>
-									<select id="bd_create_donation_donor_id" name="bd_create_donation_donor_id" class="form-select" style="width: 100%;" required>
-										<option value="" selected disabled></option>
-										<?php
-										$users = get_users( array( 'fields' => array( 'ID' ) ) );
-										foreach($users as $user){
-											$is_donor = get_user_meta( $user->id, 'is_donor' );
-											if ( $is_donor != false ) {
-												$first_name = get_user_meta( $user->id, 'first_name' );
-												$last_name = get_user_meta( $user->id, 'last_name' );
-												?>
-													<option value="<?php echo $user->id ?>"><?php echo $first_name[0] ?> <?php echo $last_name[0] ?> (ID:<?php echo $user->id ?>)</option>
-												<?php
-											}
-										}
-										?>
-									</select>
-								</div>
-								<div>
-									<label class="form-label fs-5" for="bd_create_donation_amount_ml">Amount (mL): </label>
-									<input type="text" class="form-control" id="bd_create_donation_amount_ml" name="bd_create_donation_amount_ml" placeholder="200 ml" maxlength="45" required>
-								</div>
-								<div class="my-3">
-									<label class="form-label fs-5" for="bd_create_donation_time">Time: </label>
-									<input type="datetime-local" class="form-control" id="bd_create_donation_time" name="bd_create_donation_time" required>
-								</div>
-								<div>
-									<label class="form-label fs-5" for="bd_create_donation_status">Status: </label>
-									<select id="bd_create_donation_status" name="bd_create_donation_status" class="form-select" style="width: 100%;" required>
-										<option value="" selected disabled>Select</option>
-										<option value="Completed">Completed</option>
-										<option value="In progress">In progress</option>
-										<option value="Planned">Planned</option>
-										<option value="To Be Accepted">To Be Accepted</option>
-									</select>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-								<?php 
-									$nonce = wp_create_nonce("bd_create_donation_nonce");
-									echo '<input class="btn btn-success" data-nonce="' . $nonce . '" name="bd_create_donation_submit" 
-									id="bd_create_donation_submit" onclick="bd_create_donation_submit_from(this)"
-									type="submit" value="Confirm Donation">';
-								?>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
+			<?php include BD_PLUGIN_PATH . 'templates/admin/donations/bd-create-donations-modal.php'; ?>
+			
 		</div>
+	
 	</div>
 </div>
