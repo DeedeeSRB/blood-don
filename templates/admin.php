@@ -226,16 +226,19 @@
 							<form name="bd_create_donation_form" id="bd_create_donation_form" onsubmit="return false">
 								<div class="my-3">
 									<label class="form-label fs-5 w-100" for="bd_create_donation_donor_id">Donor: </label>
-									<select id="bd_create_donation_donor_id" name="bd_create_donation_donor_id" class="form-select" required>
+									<select id="bd_create_donation_donor_id" name="bd_create_donation_donor_id" class="form-select" style="width: 100%;" required>
 										<option value="" selected disabled></option>
 										<?php
-										$users = get_users( array( 'fields' => array( 'ID', 'first_name', 'last_name' ) ) );
+										$users = get_users( array( 'fields' => array( 'ID' ) ) );
 										foreach($users as $user){
-											$first_name = get_user_meta( $user->id, 'first_name' );
-											$last_name = get_user_meta( $user->id, 'last_name' );
-											?>
-												<option value="<?php echo $user->id ?>"><?php echo $first_name[0] ?> <?php echo $last_name[0] ?> (ID:<?php echo $user->id ?>)</option>
-											<?php
+											$is_donor = get_user_meta( $user->id, 'is_donor' );
+											if ( $is_donor != false ) {
+												$first_name = get_user_meta( $user->id, 'first_name' );
+												$last_name = get_user_meta( $user->id, 'last_name' );
+												?>
+													<option value="<?php echo $user->id ?>"><?php echo $first_name[0] ?> <?php echo $last_name[0] ?> (ID:<?php echo $user->id ?>)</option>
+												<?php
+											}
 										}
 										?>
 									</select>
@@ -250,7 +253,7 @@
 								</div>
 								<div>
 									<label class="form-label fs-5" for="bd_create_donation_status">Status: </label>
-									<select id="bd_create_donation_status" name="bd_create_donation_status" class="form-control" required>
+									<select id="bd_create_donation_status" name="bd_create_donation_status" class="form-select" style="width: 100%;" required>
 										<option value="" selected disabled>Select</option>
 										<option value="Completed">Completed</option>
 										<option value="In progress">In progress</option>

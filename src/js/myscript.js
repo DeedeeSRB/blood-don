@@ -790,6 +790,7 @@ window.addEventListener("load", function() {
 
 	$('#bd_create_donation_donor_id').select2({
 		dropdownParent: $('#createDonationModal'),
-		placeholder: 'Select a donor'
+		width: 'resolve'
+		//placeholder: 'Select a donor'
 	});
 });
