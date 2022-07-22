@@ -198,7 +198,7 @@ function submit_bd_add_tba_donation_callback(data) {
 }
 
 //// DELETE TBA DONATION ////
-function bd_delete_tba_donation_submit(button) {
+function bd_delete_donation_submit(button) {
 
 	idToDelete = button.value;
 
@@ -207,26 +207,128 @@ function bd_delete_tba_donation_submit(button) {
 	nonce = $(button).attr("data-nonce");
 	
 	fd.append('nonce', nonce);
-	fd.append('action', "bd_delete_tba_donation");
+	fd.append('action', "bd_delete_donation");
 	fd.append('id_to_delete', idToDelete);
-	js_submit(fd, bd_delete_tba_donation_callback);
+	js_submit(fd, bd_delete_donation_callback);
 }
 
-function bd_delete_tba_donation_callback(data) {
+function bd_delete_donation_callback(data) {
 
 	var jdata = JSON.parse(data);
 
 	var success = jdata.success;
+	var mess = jdata.message;
 	var id = jdata.id;
 
 	if ( success == 1 ) {
-		$('#bd_delete_tba__donation_'+id).remove();
-		$("#bd_delete_tba_donation_response_div_"+id).show();
-		$("#bd_delete_tba_donation_response_div_"+id).html('<div class="fs-6">Donation deleted successfuly!</div>');
-		$("#bd_delete_tba_donation_response_div_"+id).delay(2000).fadeOut(500, function() { $(this).remove(); });
+		$('#bd_delete_donation_'+id).remove();
+		$("#bd_delete_donation_response_div_"+id).show();
+		$("#bd_delete_donation_response_div_"+id).html('<div class="fs-6">Donation deleted successfuly!</div>');
+		$("#bd_delete_donation_response_div_"+id).delay(2000).fadeOut(500, function() { $(this).remove(); });
 	}
 	else if ( success == 2 ) {
 		alert(mess);
+	}
+	else if (success == 3 ) {
+		window.location.replace('http://localhost/wordpress/login');
+	}
+}
+
+//// APPROVE TBA DONATION ////
+function bd_approve_tba_donation_submit(button) {
+
+	idToApprove = button.value;
+
+	var fd = new FormData();
+	
+	nonce = $(button).attr("data-nonce");
+	
+	fd.append('nonce', nonce);
+	fd.append('action', "bd_approve_tba_donation");
+	fd.append('id_to_approve', idToApprove);
+	js_submit(fd, bd_approve_tba_donation_callback);
+}
+
+function bd_approve_tba_donation_callback(data) {
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+	var mess = jdata.message;
+	var id = jdata.id;
+
+	if ( success == 1 ) {
+		$("#bd_approved_donations_table").load(location.href + " #bd_approved_donations_table");
+		$('#bd_delete_donation_'+id).remove();
+		$("#bd_delete_donation_response_div_"+id).show();
+		$("#bd_delete_donation_response_div_"+id).html('<div class="fs-6">Donation approved successfuly!</div>');
+		$("#bd_delete_donation_response_div_"+id).delay(2000).fadeOut(500, function() { $(this).remove(); });
+	}
+	else if ( success == 2 ) {
+		alert(mess);
+	}
+	else if (success == 3 ) {
+		window.location.replace('http://localhost/wordpress/login');
+	}
+}
+
+
+//// SET DONATION FORM ////
+function bd_set_edit_donation_form(button) {
+
+	bd_donation_id = $(button).attr("data-id");
+	bd_amount = $(button).attr("data-amount");
+	bd_time = $(button).attr("data-time");
+	bd_status = $(button).attr("data-status");
+
+	$("#bd_edit_donation_submit").attr("data-id", bd_donation_id);
+	$("#bd_edit_donation_amount_ml").val(bd_amount);
+	$("#bd_edit_donation_time").val(bd_time);
+	$("#bd_edit_donation_status").val(bd_status);
+}
+
+
+//// EDIT DONATION SUBMIT ////
+function bd_edit_donation_submit_from(button) {
+
+	if ( !document.forms['bd_edit_donation_form'].reportValidity() ) return;
+
+	var fd = new FormData();
+	
+	nonce = $(button).attr("data-nonce");
+	
+	id_to_edit = $(button).attr("data-id");
+
+	fd.append('nonce', nonce);
+	fd.append('action', "bd_edit_donation");
+	fd.append('id',id_to_edit);
+	fd.append('donor_id',-1);
+	fd.append('amount_ml',$("#bd_edit_donation_amount_ml").val());
+	fd.append('time',$("#bd_edit_donation_time").val());
+	fd.append('status',$("#bd_edit_donation_status").val());
+
+	js_submit(fd, submit_bd_edit_donation_callback);
+	
+}
+
+function submit_bd_edit_donation_callback(data) {
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+	var mess = jdata.message;
+	var id = jdata.id;
+
+	if ( success == 1 ) {
+		$("#bd_approved_donations_table").load(location.href + " #bd_approved_donations_table");
+		$("#bd_to_be_accepted_donations_table").load(location.href + " #bd_to_be_accepted_donations_table");
+		$("#bd_admin_donation_response_div").show();
+		$("#bd_admin_donation_response_div").html('<div class="fs-6">' + mess + '</div>');
+		$("#bd_admin_donation_response_div").delay(2000).fadeOut(500, function() { $(this).remove(); });
+	}
+	else if ( success == 2 ) {
+		alert(mess);
+	}
+	else if (success == 3 ) {
+		window.location.replace('http://localhost/wordpress/login');
 	}
 }
 

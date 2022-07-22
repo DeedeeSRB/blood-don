@@ -73,9 +73,9 @@ else {
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <?php 
                             $nonce = wp_create_nonce("bd_tba_donation_submit_nonce");
-                            echo '<button class="btn btn-success" type="submit" name="bd_tba_donation_submit" 
-                            id="bd_delete_tba_donation_submit" data-nonce="' . $nonce . '" data-bs-dismiss="modal"
-                            value="Submit" onclick="submit_bd_tba_donation_submit_form(this)">Donate</button>';
+                            echo '<input class="btn btn-success" type="submit" name="bd_tba_donation_submit" 
+                            id="bd_delete_tba_donation_submit" data-nonce="' . $nonce . '"
+                            value="Donate" onclick="submit_bd_tba_donation_submit_form(this)">';
                         ?>
                     </div>
                 </form>
@@ -110,17 +110,18 @@ else {
                 }
                 foreach ( $result as $data ) {
                     ?>
-                    <div name="bd_delete_tba_donation_response_div_<?php echo $data->id ?>" id="bd_delete_tba_donation_response_div_<?php echo $data->id ?>"
-                     class="alert alert-success alert-dismissible collapse"></div>
-                    <li class="table-row" id="bd_delete_tba__donation_<?php echo $data->id ?>">
+                    <div name="bd_delete_donation_response_div_<?php echo $data->id ?>" 
+                         id="bd_delete_donation_response_div_<?php echo $data->id ?>"
+                         class="alert alert-success alert-dismissible collapse"></div>
+                    <li class="table-row" id="bd_delete_donation_<?php echo $data->id ?>">
                         <div class="col" data-label="Amount (mL)"><?php echo $data->amount_ml ?></div>
                         <div class="col" data-label="Time"><?php echo $data->time ?></div>
                         <div class="col" data-label="Status"><?php echo $data->status ?></div>
                         <div class="col col-8" data-label="Delete">
                             <?php 
-                                $nonce = wp_create_nonce("bd_delete_tba_donation_nonce");
+                                $nonce_del = wp_create_nonce("bd_delete_donation_nonce");
                                 $id = $data->id;
-                                echo '<button class="btn btn-danger" data-nonce="' . $nonce . '" name="bd_delete_tba_donation" id="bd_delete_tba_donation" value="' . $id . '" onclick="bd_delete_tba_donation_submit(this)">X</button>';
+                                echo '<button class="btn btn-danger" data-nonce="' . $nonce_del . '" name="bd_delete_donation" id="bd_delete_donation" value="' . $id . '" onclick="bd_delete_donation_submit(this)">X</button>';
                             ?>
                         </div>
                     </li>

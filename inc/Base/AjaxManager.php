@@ -24,8 +24,14 @@ class AjaxManager
         add_action("wp_ajax_bd_add_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_add_tba_donation' ) );
         add_action("wp_ajax_nopriv_bd_cancel_donor", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
 
-        add_action("wp_ajax_bd_delete_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_delete_tba_donation' ) );
-        add_action("wp_ajax_nopriv_bd_delete_tba_donation", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
+        add_action("wp_ajax_bd_delete_donation", array( 'Inc\Base\AjaxManager' , 'bd_delete_donation' ) );
+        add_action("wp_ajax_nopriv_bd_delete_donation", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
+
+        add_action("wp_ajax_bd_approve_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_approve_tba_donation' ) );
+        add_action("wp_ajax_nopriv_bd_approve_tba_donation", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
+
+        add_action("wp_ajax_bd_edit_donation", array( 'Inc\Base\AjaxManager' , 'bd_edit_donation' ) );
+        add_action("wp_ajax_nopriv_bd_edit_donation", array( 'Inc\Base\AjaxManager' , 'please_login' ) );
 
         add_action("wp_ajax_add_donor", array( 'Inc\Base\AjaxManager' , 'add_donor' ) );
         add_action("wp_ajax_get_donor", array( 'Inc\Base\AjaxManager' , 'get_donor' ) );
@@ -286,9 +292,9 @@ class AjaxManager
         exit( json_encode( $return ) );
     }
 
-    public static function bd_delete_tba_donation() {
+    public static function bd_delete_donation() {
 
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_delete_tba_donation_nonce")) {
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_delete_donation_nonce")) {
             $return['success'] = 2;
             $return['message'] = 'Nonce Error';
             exit( json_encode( $return ) );
@@ -324,6 +330,154 @@ class AjaxManager
         $return['message'] = 'Donation deleted successfully!';          
         $return['id'] = $id_to_delete;
 		exit( json_encode( $return ) );
+    }
+
+    public static function bd_approve_tba_donation() {
+
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_approve_tba_donation_nonce")) {
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            exit( json_encode( $return ) );
+        } 
+
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            exit( json_encode( $return ) );
+        } 
+        
+		$id_to_approve = sanitize_text_field( $_POST['id_to_approve'] );
+		
+        global $wpdb;
+        $tablename_donations = $wpdb->prefix . 'donations'; 
+
+        $result = $wpdb->update( 
+            $tablename_donations, 
+            array( 'status' => 'Planned' ), 
+            array( 'ID' => $id_to_approve ), 
+            array( '%s' )
+        );
+
+        if ( $result == false ) {
+            $return['success'] = 2;
+            $return['success'] = 'An error occured when deleting donation with id ' . $id_to_approve;
+            exit( json_encode( $return ) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'Donation approved successfully!';          
+        $return['id'] = $id_to_approve;
+		exit( json_encode( $return ) );
+    }
+
+    public static function bd_edit_donation() {
+
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_edit_donation_nonce")) {
+            $return = [];
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            exit( json_encode( $return ) );
+        }  
+
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            exit( json_encode( $return ) );
+        } 
+
+        $id_to_update = sanitize_text_field( $_POST['id'] );
+		
+        $donor_id = sanitize_text_field($_POST['donor_id']);
+		$amount_ml = sanitize_text_field($_POST['amount_ml']);
+		$time = $_POST['time'];
+        $status = sanitize_text_field($_POST['status']);
+
+        global $wpdb;
+        $tablename_donations = $wpdb->prefix . 'donations'; 
+
+        $query = "SELECT * FROM $tablename_donations WHERE id = $id_to_update";
+
+        $result = $wpdb->get_row( $query );
+
+        if ( $result === null ) {
+            $return['success'] = 2;
+            $return['message'] = 'Couldn\'t find donation with id ' . $id_to_update;
+            exit( json_encode($return) );
+        }
+
+        if ( $donor_id != -1 ) {
+            $tablename_donors = $wpdb->prefix . 'donors'; 
+
+            $query = "SELECT * FROM $tablename_donors WHERE id = $donor_id";
+    
+            $result = $wpdb->get_row( $query );
+    
+            if ( $result === null ) {
+                $return['success'] = 2;
+                $return['message'] = 'Couldn\'t find donor with id ' . $donor_id;
+                exit( json_encode($return) );
+            }
+        }
+
+        if ( !is_numeric( $amount_ml ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'Please enter a numeric amount!';
+            exit( json_encode($return) );
+        }
+
+        $status_avi = array( 'Completed', 'In progress', 'Planned', 'To Be Accepted' );
+        if ( !in_array( $status, $status_avi ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'Please select a valid status!';
+            exit( json_encode($return) );
+        }
+        
+        if ( $donor_id != -1 ) {
+            $result = $wpdb->update( 
+                $tablename_donations, 
+                array( 
+                    'donor_id' => $donor_id, 
+                    'amount_ml' => $amount_ml, 
+                    'time' => $time, 
+                    'status' => $status, 
+                ),
+                array( 'id' => $id_to_update ), 
+                array( 
+                    '%d', 
+                    '%d',
+                    '%s', 
+                    '%s',
+                )
+            );
+        }
+        else {
+            $result = $wpdb->update( 
+                $tablename_donations, 
+                array( 
+                    'amount_ml' => $amount_ml, 
+                    'time' => $time, 
+                    'status' => $status, 
+                ),
+                array( 'id' => $id_to_update ), 
+                array( 
+                    '%d',
+                    '%s', 
+                    '%s',
+                )
+            );
+        }
+
+        if ( $result === false ) {
+            $return['success'] = 2;
+            $return['message'] = 'Couldn\'t update donation with id ' . $id_to_update;
+            exit( json_encode($return) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'Updated donor with id ' . $id_to_update . ' successfuly';
+        exit( json_encode($return) );
     }
 
     public static function add_donor() 
