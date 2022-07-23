@@ -14,7 +14,7 @@ if ( !$current_user->get( 'is_donor' ) ) {
             <div class="fs-5">To become a donor please choose your blood group</div>
         </div>
         <div class="col text-center">
-            <div name="bd_be_donor_alert_box" id="bd_be_donor_alert_box" class="alert alert-danger alert-dismissible collapse role="alert"></div>
+            <div name="bd_be_donor_alert_box" id="bd_be_donor_alert_box" class="alert alert-danger alert-dismissible collapse"></div>
             <form name="bd_be_donor_form" id="bd_be_donor_form" onsubmit="return false">
                 <label for="bd_be_donor_bg" class="form-label fs-5">Blood Group </label>
                 <select id="bd_be_donor_bg" style="width: auto; display: inline;"
@@ -45,6 +45,7 @@ else {
 
 <div>
     <div name="bd_home_page_alert_box" id="bd_home_page_alert_box" class="alert alert-danger alert-dismissible collapse"></div>
+    <div name="bd_home_page_success_box" id="bd_home_page_success_box" class="alert alert-success alert-dismissible collapse"></div>
     <div class="row">
         <div class="col fs-3">To Be Accepted Donations</div>
         <button type="button" class="col-auto btn btn-success px-5" data-bs-toggle="modal" data-bs-target="#donateModal">Donate</button>
@@ -168,7 +169,7 @@ else {
             ?>
         </ul>
     </div>
-    <div name="bd_cancel_donor_alert_box" id="bd_cancel_donor_alert_box" class="alert alert-danger alert-dismissible collapse role="alert"></div>
+    <div name="bd_cancel_donor_alert_box" id="bd_cancel_donor_alert_box" class="alert alert-danger alert-dismissible collapse"></div>
     <?php 
         $nonce = wp_create_nonce("bd_cancel_donor_nonce");
         $id = $current_user->ID;

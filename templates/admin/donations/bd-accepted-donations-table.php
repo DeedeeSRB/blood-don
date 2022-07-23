@@ -45,7 +45,7 @@
 							<div class="col-auto">
 								<button class="btn btn-warning" data-bs-toggle="modal" data-status="<?php echo $data->status ?>"
 								data-amount="<?php echo $data->amount_ml ?>" data-time="<?php echo $data->time ?>"
-								data-id="<?php echo $data->id ?>"
+								data-id="<?php echo $data->id ?>" data-preset="true"
 								data-bs-target="#editDonationModal" onclick="bd_set_edit_donation_form(this)">
 								<i class="fas fa-pen text-light"></i></button>
 							</div>

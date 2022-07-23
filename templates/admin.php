@@ -9,7 +9,6 @@
 		</div>
 	</nav>
 
-
 <!---------------------------------------- DONORS PAGE  -------------------------------------------------->
 	<div class="tab-content" id="nav-tabContent">
 		<div class="tab-pane fade show active" id="nav-donors" role="tabpanel" aria-labelledby="nav-donors-tab" tabindex="0">
@@ -17,8 +16,10 @@
 			<div name="bd_admin_donor_response_div" id="bd_admin_donor_response_div" class="alert alert-danger alert-dismissible collapse"></div>
 			<div class="row my-3">
 				<div class="col"><h3>Current Donors</h3></div>
-				<button type="button" class="col-auto btn btn-success px-2 mx-3" data-bs-toggle="modal" data-bs-target="#createDonorModal">Add new donor</button>
-				<button type="button" class="col-auto btn btn-warning px-2" data-bs-toggle="modal" data-bs-target="#customEditDonorModal">Edit donor</button>
+				<div class="col-auto">
+					<button type="button" class="col-auto btn btn-success px-2 mx-3" data-bs-toggle="modal" data-bs-target="#createDonorModal">Add new donor</button>
+					<button type="button" class="col-auto btn btn-warning px-2" data-bs-toggle="modal" data-bs-target="#customEditDonorModal">Edit donor</button>
+				</div>
 			</div>
 			<!-------------------------------------- DONORS TABLE -------------------------------------->
 			<?php include BD_PLUGIN_PATH . 'templates/admin/donors/bd-donors-table.php'; ?>
@@ -34,11 +35,15 @@
 <!---------------------------------------- DONATIONS PAGE  -------------------------------------------------->
 		<div class="tab-pane fade" id="nav-donations" role="tabpanel" aria-labelledby="nav-donations-tab" tabindex="0">
 			<?php $nonce_del_donation = wp_create_nonce("bd_delete_donation_nonce"); ?>
-			<div name="bd_admin_donation_response_div" id="bd_admin_donation_response_div" class="alert alert-danger alert-dismissible collapse"></div>
+			<div name="bd_admin_donation_danger_div" id="bd_admin_donation_danger_div" class="alert alert-danger alert-dismissible collapse"></div>
+			<div name="bd_admin_donation_success_div" id="bd_admin_donation_success_div" class="alert alert-success alert-dismissible collapse"></div>
 			<div class="row my-3">
 				<div class="col"><h3>To Be Accepted Donations</h3></div>
-				<button type="button" class="col-auto btn btn-success px-2 mx-3" data-bs-toggle="modal" data-bs-target="#createDonationModal">Create new donation</button>
-				<button type="button" class="col-auto btn btn-warning px-2" data-bs-toggle="modal" data-bs-target="#customEditDonationModal">Edit donation</button>
+				<div class="col-auto">
+					<button type="button" class="col-auto btn btn-success px-2 mx-3" data-bs-toggle="modal" data-bs-target="#createDonationModal">Create new donation</button>
+					<button type="button" class="col-auto btn btn-warning px-2" data-bs-toggle="modal" data-preset=false 
+					data-bs-target="#editDonationModal" onclick="bd_set_edit_donation_form(this)">Edit donation</button>
+				</div>
 			</div>
 			<!-------------------------------------- TO BE ACCEPTED DONATIONS TABLE -------------------------------------->
 			<?php include BD_PLUGIN_PATH . 'templates/admin/donations/bd-to-be-accepted-donations-table.php'; ?>

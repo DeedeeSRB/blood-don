@@ -1,5 +1,6 @@
 <div class="w-50 m-auto">
-    <div name="bd_login_alert_box" id="bd_login_alert_box" class="alert alert-danger alert-dismissible collapse role="alert"></div>
+    <div name="bd_login_danger_box" id="bd_login_danger_box" class="alert alert-danger alert-dismissible collapse"></div>
+    <div name="bd_login_success_box" id="bd_login_success_box" class="alert alert-success alert-dismissible collapse"></div>
     <form name="bd_login_form" id="bd_login_form" onsubmit="return false">
         <div class="row align-items-center">
             <div class="row">
