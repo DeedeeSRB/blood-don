@@ -4,17 +4,8 @@
  */
 namespace Inc\Base;
 
-use Inc\Base\DatabaseCreator;
-
-class Activate
+class DatabaseCreator
 {
-	public static function activate() 
-	{
-		//Activate::createTables();
-		DatabaseCreator::createTables();
-		flush_rewrite_rules();
-	}
-
 	public static function createTables()
 	{
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -33,9 +24,7 @@ class Activate
 			PRIMARY KEY (id),
 			CONSTRAINT donation_donor_fk FOREIGN KEY (donor_id) 
 			REFERENCES $tablename_donors (id) ON DELETE SET NULL ON UPDATE NO ACTION
-		  ) $charset_collate";
-		      
+		  ) $charset_collate";    
 		maybe_create_table( $tablename_donations, $donations_sql_create );
 	}
-
 }

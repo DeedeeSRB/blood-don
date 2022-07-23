@@ -26,6 +26,8 @@
 				<?php
 			}
 			foreach ( $result as $data ) {
+				$first_name = get_user_meta( $data->donor_id, 'first_name' )[0];
+                $last_name = get_user_meta( $data->donor_id, 'last_name' )[0];
 				?>
 				<div name="bd_delete_donation_response_div_<?php echo $data->id ?>" 
 					id="bd_delete_donation_response_div_<?php echo $data->id ?>"
@@ -33,7 +35,7 @@
 				<li class="table-row" id="bd_delete_donation_<?php echo $data->id ?>">
 					<div class="col col-1" data-label="ID"><?php echo $data->id ?></div>
 					<div class="col" data-label="Donor">
-						<?php echo $user->first_name ?> <?php echo $user->last_name ?> (ID:<?php echo $data->donor_id ?>)
+						<?php echo $first_name ?> <?php echo $last_name ?> (ID:<?php echo $data->donor_id ?>)
 					</div>
 					<div class="col" data-label="Amount (mL)"><?php echo $data->amount_ml ?></div>
 					<div class="col" data-label="Time"><?php echo $data->time ?></div>

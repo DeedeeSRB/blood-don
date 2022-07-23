@@ -126,7 +126,6 @@ function submit_bd_be_donor_callback(data) {
 }
 
 //// STOP BEING A DONOR ////
-
 function bd_cancel_donor(button) {
 
 	var fd = new FormData();
@@ -152,7 +151,16 @@ function submit_bd_cancel_donor_callback(data) {
 	$("#bd_cancel_donor_alert_box").delay(3000).fadeOut(500, function() { $(this).hide(); });
 
 	if (success == 1 ) {
-		location.reload();
+		if ( $("#bd_approved_donors_table").length ) {
+			$("#bd_approved_donors_table").load(location.href + " #bd_approved_donors_table");
+		}
+		else {
+			location.reload();
+		}
+	}
+
+	if (success == 2 ) {
+		alert(mess);
 	}
 
 	if (success == 3 ) {
@@ -367,6 +375,9 @@ function submit_bd_create_donation_callback(data) {
 		window.location.replace('http://localhost/wordpress/login');
 	}
 }
+
+////  DONOR NEW ////
+
 
 //// ADD DONOR ////
 function submit_add_donor_form(button)

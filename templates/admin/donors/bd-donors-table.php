@@ -13,7 +13,7 @@
         <?php
             $users = get_users( array( 'fields' => array( 'id', 'user_email' ) ) );
             foreach($users as $user){
-                $is_donor = get_user_meta( $user->id, 'is_donor' );
+                $is_donor = get_user_meta( $user->id, 'is_donor' )[0];
                 if ( $is_donor != false ) {
                     $first_name = get_user_meta( $user->id, 'first_name' )[0];
                     $last_name = get_user_meta( $user->id, 'last_name' )[0];
@@ -36,8 +36,8 @@
                         <div class="col" data-label="Blood Group"><?php echo $blood_group ?></div>
                         <div class="col col-3" data-label="Manage">
                         <?php 
-                            $nonce_del_donor = wp_create_nonce("bd_delete_donor_nonce");
-                            echo '<button class="btn btn-danger" data-nonce="' . $nonce_del_donor . '" name="bd_delete_donor" id="bd_delete_donor" value="' . $user->id . '" onclick="bd_delete_donor_submit(this)">X</button>';
+                            $nonce = wp_create_nonce( 'bd_cancel_donor_nonce' );
+                            echo '<button class="btn btn-danger" data-nonce="' . $nonce . '" name="bd_delete_donor" id="bd_delete_donor" value="' . $user->id . '" onclick="bd_cancel_donor(this)">X</button>';
                         ?>
                         </div>
                     </li>

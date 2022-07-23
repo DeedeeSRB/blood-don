@@ -103,7 +103,7 @@ class AjaxManager
             'first_name'            => $first_name,   
             'last_name'             => $last_name,   
             'meta_input'            => array(
-                'is_donor'          => false, 
+                'is_donor'          => 0, 
                 'phone_number'      => $phone_number, 
                 'address'           => $address,
                 'blood_group'           => '',
@@ -225,9 +225,11 @@ class AjaxManager
             $return['message'] = 'Redirect login';
             exit( json_encode( $return ) );
         } 
+
+        $donor_to_cancel = sanitize_text_field($_POST['donor_to_cancel']);
         
-        $is_donor_result = update_user_meta( $current_user->id, 'is_donor', false );
-        $blood_group_result = update_user_meta( $current_user->id, 'blood_group', '' );
+        $is_donor_result = update_user_meta( $donor_to_cancel, 'is_donor', false );
+        $blood_group_result = update_user_meta( $donor_to_cancel, 'blood_group', '' );
 
         if ( $is_donor_result === false || $blood_group_result === false ) {
             $return['success'] = 2;

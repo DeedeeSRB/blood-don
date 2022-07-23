@@ -8,6 +8,9 @@
 			<button class="nav-link" id="nav-donations-tab" data-bs-toggle="tab" data-bs-target="#nav-donations" type="button" role="tab" aria-controls="nav-donations" aria-selected="false">Donations</button>
 		</div>
 	</nav>
+
+
+<!---------------------------------------- DONORS PAGE  -------------------------------------------------->
 	<div class="tab-content" id="nav-tabContent">
 		<div class="tab-pane fade show active" id="nav-donors" role="tabpanel" aria-labelledby="nav-donors-tab" tabindex="0">
 			<?php $nonce_del_donor = wp_create_nonce("bd_delete_donor_nonce"); ?>

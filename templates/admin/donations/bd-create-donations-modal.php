@@ -14,7 +14,7 @@
 										<?php
 										$users = get_users( array( 'fields' => array( 'ID' ) ) );
 										foreach($users as $user){
-											$is_donor = get_user_meta( $user->id, 'is_donor' );
+											$is_donor = get_user_meta( $user->id, 'is_donor' )[0];
 											if ( $is_donor != false ) {
 												$first_name = get_user_meta( $user->id, 'first_name' );
 												$last_name = get_user_meta( $user->id, 'last_name' );
