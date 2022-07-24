@@ -22,13 +22,13 @@
 				</div>
 			</div>
 			<!-------------------------------------- DONORS TABLE -------------------------------------->
-			<?php include BD_PLUGIN_PATH . 'templates/admin/donors/bd-donors-table.php'; ?>
+			<?php include BD_PLUGIN_PATH . 'templates\admin\donors\bd-donors-table.php'; ?>
 
 			<!-------------------------------------- EDIT DONORS MODAL -------------------------------------->
-			<?php include BD_PLUGIN_PATH . 'templates/admin/donors/bd-edit-donors-modal.php'; ?>
+			<?php include BD_PLUGIN_PATH . 'templates\admin\donors\bd-edit-donors-modal.php'; ?>
 
 			<!-------------------------------------- CREATE DONORS MODAL -------------------------------------->
-			<?php include BD_PLUGIN_PATH . 'templates/admin/donors/bd-create-donors-modal.php'; ?>
+			<?php include BD_PLUGIN_PATH . 'templates\admin\donors\bd-create-donors-modal.php'; ?>
 
 		</div>
 
@@ -46,17 +46,17 @@
 				</div>
 			</div>
 			<!-------------------------------------- TO BE ACCEPTED DONATIONS TABLE -------------------------------------->
-			<?php include BD_PLUGIN_PATH . 'templates/admin/donations/bd-to-be-accepted-donations-table.php'; ?>
+			<?php include BD_PLUGIN_PATH . 'templates\admin\donations\bd-to-be-accepted-donations-table.php'; ?>
 
 			<h3>Accepted Donations</h3>
 			<!-------------------------------------- ACCEPTED DONATIONS TABLE -------------------------------------->
-			<?php include BD_PLUGIN_PATH . 'templates/admin/donations/bd-accepted-donations-table.php'; ?>
+			<?php include BD_PLUGIN_PATH . 'templates\admin\donations\bd-accepted-donations-table.php'; ?>
 
 			<!-------------------------------------- EDIT DONATIONS MODAL -------------------------------------->
-			<?php include BD_PLUGIN_PATH . 'templates/admin/donations/bd-edit-donations-modal.php'; ?>
+			<?php include BD_PLUGIN_PATH . 'templates\admin\donations\bd-edit-donations-modal.php'; ?>
 
 			<!-------------------------------------- CREATE DONATIONS MODAL -------------------------------------->
-			<?php include BD_PLUGIN_PATH . 'templates/admin/donations/bd-create-donations-modal.php'; ?>
+			<?php include BD_PLUGIN_PATH . 'templates\admin\donations\bd-create-donations-modal.php'; ?>
 			
 		</div>
 	

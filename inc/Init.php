@@ -18,6 +18,7 @@ final class Init
             Base\SettingsLink::class,
 			Base\CustomShortcode::class,
 			Base\AjaxManager::class,
+			Base\DonorProfile::class,
 		];
 	}
 
