@@ -22,12 +22,11 @@ class AjaxManager
         add_action("wp_ajax_bd_delete_donation", array( 'Inc\Base\AjaxManager' , 'bd_delete_donation' ) );
         add_action("wp_ajax_bd_approve_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_approve_tba_donation' ) );
         
-
-        add_action("wp_ajax_bd_edit_donation", array( 'Inc\Base\AjaxManager' , 'bd_edit_donation' ) );
         add_action("wp_ajax_bd_create_donation", array( 'Inc\Base\AjaxManager' , 'bd_create_donation' ) );
+        add_action("wp_ajax_bd_edit_donation", array( 'Inc\Base\AjaxManager' , 'bd_edit_donation' ) );
+        add_action("wp_ajax_bd_get_donation", array( 'Inc\Base\AjaxManager' , 'bd_get_donation' ) );
 
         $please_login = array( 'Inc\Base\AjaxManager' , 'please_login' );
-
         add_action("wp_ajax_nopriv_bd_be_donor", $please_login );
         add_action("wp_ajax_nopriv_bd_cancel_donor", $please_login );
         add_action("wp_ajax_nopriv_bd_add_tba_donation", $please_login );
@@ -35,6 +34,7 @@ class AjaxManager
         add_action("wp_ajax_nopriv_bd_approve_tba_donation", $please_login );
         add_action("wp_ajax_nopriv_bd_edit_donation", $please_login );
         add_action("wp_ajax_nopriv_bd_create_donation", $please_login );   
+        add_action("wp_ajax_nopriv_bd_get_donation", $please_login );
 	}
 
     public static function bd_register() {
@@ -44,8 +44,7 @@ class AjaxManager
         // $return['message'] = 'Deleted successfuly!';
         // exit( json_encode( $return ) );
 
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_register_form_nonce")) {
-            $return = [];
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_register_form_nonce") ) {
             $return['success'] = 2;
             $return['message'] = 'Nonce Error';
             exit( json_encode( $return ) );
@@ -107,8 +106,7 @@ class AjaxManager
 
     public static function bd_login() {
 
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_login_form_nonce")) {
-            $return = [];
+        if ( !wp_verify_nonce( $_POST['nonce'], "bd_login_form_nonce") ) {
             $return['success'] = 2;
             $return['message'] = 'Nonce Error';
             exit( json_encode( $return ) );
@@ -152,12 +150,7 @@ class AjaxManager
 
     public static function bd_be_donor() {
 
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_be_donor_nonce")) {
-            $return = [];
-            $return['success'] = 2;
-            $return['message'] = 'Nonce Error';
-            exit( json_encode( $return ) );
-        }  
+        if ( AjaxManager::security_check( "bd_be_donor_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_be_donor_nonce") ) );
 
         $blood_group = sanitize_text_field($_POST['blood_group']);
         $bld_grps = array( 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-' );
@@ -168,11 +161,6 @@ class AjaxManager
         }
         
         $current_user = wp_get_current_user();
-        if ( !$current_user->exists() ) {
-            $return['success'] = 3;
-            $return['message'] = 'Redirect login';
-            exit( json_encode( $return ) );
-        } 
         
         $is_donor_result = update_user_meta( $current_user->id, 'is_donor', true );
         $blood_group_result = update_user_meta( $current_user->id, 'blood_group', $blood_group );
@@ -190,18 +178,7 @@ class AjaxManager
 
     public static function bd_cancel_donor() {
 
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_cancel_donor_nonce")) {
-            $return['success'] = 2;
-            $return['message'] = 'Nonce Error';
-            exit( json_encode( $return ) );
-        }  
-        
-        $current_user = wp_get_current_user();
-        if ( !$current_user->exists() ) {
-            $return['success'] = 3;
-            $return['message'] = 'Redirect login';
-            exit( json_encode( $return ) );
-        } 
+        if ( AjaxManager::security_check( "bd_cancel_donor_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_cancel_donor_nonce") ) );
 
         $donor_to_cancel = sanitize_text_field($_POST['donor_to_cancel']);
         
@@ -221,19 +198,9 @@ class AjaxManager
 
     public static function bd_add_tba_donation() {
 
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_tba_donation_submit_nonce")) {
-            $return['success'] = 2;
-            $return['message'] = 'Nonce Error';
-            exit( json_encode( $return ) );
-        }
-        
-        $current_user = wp_get_current_user();
-        if ( !$current_user->exists() ) {
-            $return['success'] = 3;
-            $return['message'] = 'Redirect login';
-            exit( json_encode( $return ) );
-        } 
+        if ( AjaxManager::security_check( "bd_tba_donation_submit_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_tba_donation_submit_nonce") ) );
 
+        $current_user = wp_get_current_user();
         $donor_id = $current_user->ID;
 		$amount_ml = sanitize_text_field($_POST['amount_ml']);
 		$time = $_POST['time'];
@@ -268,7 +235,7 @@ class AjaxManager
             $return['message'] = 'An error occured when adding donation!';
             exit( json_encode( $return ) );
         }
-
+        $return = [];
         $return['success'] = 1;
         $return['message'] = 'Donation added successfully!';
         exit( json_encode( $return ) );
@@ -276,19 +243,8 @@ class AjaxManager
 
     public static function bd_delete_donation() {
 
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_delete_donation_nonce")) {
-            $return['success'] = 2;
-            $return['message'] = 'Nonce Error';
-            exit( json_encode( $return ) );
-        } 
-
-        $current_user = wp_get_current_user();
-        if ( !$current_user->exists() ) {
-            $return['success'] = 3;
-            $return['message'] = 'Redirect login';
-            exit( json_encode( $return ) );
-        } 
-        
+        if ( AjaxManager::security_check( "bd_delete_donation_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_delete_donation_nonce") ) );
+     
 		$id_to_delete = sanitize_text_field( $_POST['id_to_delete'] );
 		
         
@@ -316,18 +272,7 @@ class AjaxManager
 
     public static function bd_approve_tba_donation() {
 
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_approve_tba_donation_nonce")) {
-            $return['success'] = 2;
-            $return['message'] = 'Nonce Error';
-            exit( json_encode( $return ) );
-        } 
-
-        $current_user = wp_get_current_user();
-        if ( !$current_user->exists() ) {
-            $return['success'] = 3;
-            $return['message'] = 'Redirect login';
-            exit( json_encode( $return ) );
-        } 
+        if ( AjaxManager::security_check( "bd_approve_tba_donation_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_approve_tba_donation_nonce") ) );
         
 		$id_to_approve = sanitize_text_field( $_POST['id_to_approve'] );
 		
@@ -354,20 +299,8 @@ class AjaxManager
     }
 
     public static function bd_edit_donation() {
-
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_edit_donation_nonce")) {
-            $return = [];
-            $return['success'] = 2;
-            $return['message'] = 'Nonce Error';
-            exit( json_encode( $return ) );
-        }  
-
-        $current_user = wp_get_current_user();
-        if ( !$current_user->exists() ) {
-            $return['success'] = 3;
-            $return['message'] = 'Redirect login';
-            exit( json_encode( $return ) );
-        } 
+        
+        if ( AjaxManager::security_check( "bd_edit_donation_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_edit_donation_nonce") ) );
 
         $id_to_update = sanitize_text_field( $_POST['id'] );
 		
@@ -467,24 +400,12 @@ class AjaxManager
 
     public static function bd_create_donation() {
 
-        if ( !wp_verify_nonce( $_POST['nonce'], "bd_create_donation_nonce" ) ) {
-            $return['success'] = 2;
-            $return['message'] = 'Nonce Error';
-            exit( json_encode( $return ) );
-        }  
-
-        $current_user = wp_get_current_user();
-        if ( !$current_user->exists() ) {
-            $return['success'] = 3;
-            $return['message'] = 'Redirect login';
-            exit( json_encode( $return ) );
-        } 
+        if ( AjaxManager::security_check( "bd_create_donation_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_create_donation_nonce") ) );
 
 		$donor_id = sanitize_text_field($_POST['donor_id']);
 		$amount_ml = sanitize_text_field($_POST['amount_ml']);
 		$time = $_POST['time'];
         $status = sanitize_text_field($_POST['status']);
-
         
         $result = get_userdata( $donor_id );
 
@@ -552,12 +473,66 @@ class AjaxManager
         
     }
 
+    public static function bd_get_donation() {
+
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            exit( json_encode( $return ) );
+        } 
+
+		$donation_id = sanitize_text_field($_POST['id']);
+        
+        global $wpdb;
+        $tablename_donations = $wpdb->prefix . 'donations'; 
+
+        $query = "SELECT * FROM $tablename_donations WHERE id = $donation_id;";
+        $result = $wpdb->get_row( $query );
+
+        if ( $result === null ) {
+            $return['success'] = 2;
+            $return['message'] = 'An error occured when getting donation!';
+            exit( json_encode($return) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'Got donation!';
+
+        $return['donor_id'] = $result->donor_id;
+        $return['amount_ml'] = $result->amount_ml;
+        $return['time'] = $result->time;
+        $return['status'] = $result->status;
+
+        exit( json_encode($return) );
+    }
+
     public static function please_login() {
         $return = [];
         $return['success'] = 3;
         $return['message'] = 'Redirect';
         $return['color'] = '#f56565';
         exit( json_encode( $return ) );
+    }
+
+    public static function security_check( $nonce ) {
+
+        $return['success'] = 1;
+
+        if ( !wp_verify_nonce( $_POST['nonce'], $nonce ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'Nonce Error';
+            return $return;
+        }  
+
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            return $return;
+        } 
+
+        return $return;
     }
 
 }

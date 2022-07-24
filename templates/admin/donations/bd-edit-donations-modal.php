@@ -17,8 +17,7 @@
 							$tablename_donations = $wpdb->prefix . 'donations'; 
 							$query = "
 							SELECT * 
-							FROM $tablename_donations
-							WHERE status <> 'To Be Accepted';";
+							FROM $tablename_donations;";
 				
 							$donations = $wpdb->get_results( $query );
 							foreach($donations as $donation){
@@ -50,7 +49,7 @@
 					</div>
 					<div>
 						<label class="form-label fs-5" for="bd_edit_donation_amount_ml">Amount (mL): </label>
-						<input type="text" class="form-control" id="bd_edit_donation_amount_ml" name="bd_edit_donation_amount_ml" placeholder="200 ml" maxlength="45" required>
+						<input type="number" class="form-control" id="bd_edit_donation_amount_ml" name="bd_edit_donation_amount_ml" placeholder="200 ml" maxlength="45" required>
 					</div>
 					<div class="my-3">
 						<label class="form-label fs-5" for="bd_edit_donation_time">Time: </label>

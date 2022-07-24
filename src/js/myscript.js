@@ -145,7 +145,7 @@ function submit_bd_add_tba_donation_callback(data) {
 	if (success == 1 ) $("#bd_tba_donations_table").load(location.href + " #bd_tba_donations_table");
 }
 
-//// DELETE TBA DONATION ////
+//// DELETE DONATION ////
 function bd_delete_donation_submit(button) {
 
 	idToDelete = button.value;
@@ -225,10 +225,13 @@ function bd_set_edit_donation_form(button) {
 		return;
 	}
 	
+	console.log('test');
 	$("#bd_edit_donation_submit").attr("data-id", -1);
-	$("#bd_edit_donation_amount_ml").val();
-	$("#bd_edit_donation_time").val();
-	$("#bd_edit_donation_status").val(); 
+	$("#bd_edit_donation_id").val(null).trigger('change');
+	$("#bd_edit_donation_donor_id").val(null).trigger('change');
+	$("#bd_edit_donation_amount_ml").val(null);
+	$("#bd_edit_donation_time").val(null);
+	$("#bd_edit_donation_status").val(null); 
 
 	$("#bd_edit_donation_id_sec").show();
 	$("#bd_edit_donation_donor_id_sec").show();
@@ -308,6 +311,35 @@ function submit_bd_create_donation_callback(data) {
 ////  DONOR NEW ////
 
 
+//// Get Donation ////
+function get_donation(id) {
+	var fd = new FormData();
+
+	fd.append('action', "bd_get_donation");
+	fd.append('id',id);
+
+	js_submit(fd, get_donation_callback, "", "");
+}
+
+function get_donation_callback(data) {
+
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+
+	var donor_id = jdata.donor_id;
+	var amount_ml = jdata.amount_ml;
+	var time = jdata.time;
+	var status = jdata.status;
+	
+	if (success == 1) {
+		$("#bd_edit_donation_donor_id").val(donor_id).trigger('change');;
+		$("#bd_edit_donation_amount_ml").val(amount_ml);
+		$("#bd_edit_donation_time").val(time);
+		$("#bd_edit_donation_status").val(status); 
+	}
+}
+
 function js_submit(data, callback, suc_div, alert_div)
 {
 	$.ajax({
@@ -345,10 +377,10 @@ function submit_callback(data, suc_div, alert_div) {
 }
 
 window.addEventListener("load", function() {
-	
+
 	$('#bd_edit_donation_id').select2({
 		dropdownParent: $('#editDonationModal'),
-		width: 'resolve'
+		//width: 'resolve'
 	});
 
 	$('#bd_edit_donation_donor_id').select2({
@@ -360,4 +392,10 @@ window.addEventListener("load", function() {
 		dropdownParent: $('#createDonationModal'),
 		width: 'resolve'
 	});
+
+	$('#bd_edit_donation_id').on('select2:select', function (e) {
+		var donationToGet = e.params.data.id;
+		get_donation(donationToGet);
+	});
+
 });
