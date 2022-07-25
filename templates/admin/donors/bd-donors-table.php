@@ -24,7 +24,7 @@
                     <div name="bd_delete_donor_response_div_<?= $user->id ?>" 
 					id="bd_delete_donor_response_div_<?= $user->id ?>"
 					class="alert alert-success alert-dismissible collapse"></div>
-                    <li class="table-row" id="delete_donor_<?= $user->id ?>">
+                    <li class="table-row" id="bd_remove_donor_<?= $user->id ?>">
                         <div class="col col-1" data-label="Id"><?= $user->id ?></div>
                         <div class="col" data-label="First Name"><?= $first_name ?></div>
                         <div class="col" data-label="Last Name"><?= $last_name ?></div>

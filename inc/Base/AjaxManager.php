@@ -19,6 +19,7 @@ class AjaxManager
         add_action("wp_ajax_bd_cancel_donor", array( 'Inc\Base\AjaxManager' , 'bd_cancel_donor' ) );
 
         add_action("wp_ajax_bd_edit_donor", array( 'Inc\Base\AjaxManager' , 'bd_edit_donor' ) );
+        add_action("wp_ajax_bd_get_donor", array( 'Inc\Base\AjaxManager' , 'bd_get_donor' ) );
         
         add_action("wp_ajax_bd_add_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_add_tba_donation' ) );
         add_action("wp_ajax_bd_delete_donation", array( 'Inc\Base\AjaxManager' , 'bd_delete_donation' ) );
@@ -32,6 +33,7 @@ class AjaxManager
         add_action("wp_ajax_nopriv_bd_be_donor", $please_login );
         add_action("wp_ajax_nopriv_bd_cancel_donor", $please_login );
         add_action("wp_ajax_nopriv_bd_edit_donor", $please_login );
+        add_action("wp_ajax_nopriv_bd_get_donor", $please_login );
         add_action("wp_ajax_nopriv_bd_add_tba_donation", $please_login );
         add_action("wp_ajax_nopriv_bd_delete_donation", $please_login );
         add_action("wp_ajax_nopriv_bd_approve_tba_donation", $please_login );
@@ -155,6 +157,10 @@ class AjaxManager
 
         if ( AjaxManager::security_check( "bd_be_donor_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_be_donor_nonce") ) );
 
+        $id = sanitize_text_field($_POST['id']);
+
+        if ( $id == -1) $id = wp_get_current_user()->id;
+        
         $blood_group = sanitize_text_field($_POST['blood_group']);
         $bld_grps = array( 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-' );
         if ( !in_array( $blood_group, $bld_grps ) ) {
@@ -163,10 +169,8 @@ class AjaxManager
             exit( json_encode( $return ) );
         }
         
-        $current_user = wp_get_current_user();
-        
-        $is_donor_result = update_user_meta( $current_user->id, 'is_donor', true );
-        $blood_group_result = update_user_meta( $current_user->id, 'blood_group', $blood_group );
+        $is_donor_result = update_user_meta( $id, 'is_donor', true );
+        $blood_group_result = update_user_meta( $id, 'blood_group', $blood_group );
 
         if ( $is_donor_result === false || $blood_group_result === false ) {
             $return['success'] = 2;
@@ -175,7 +179,7 @@ class AjaxManager
         }
 
         $return['success'] = 1;
-        $return['message'] = 'You became a donor!';
+        $return['message'] = 'User became a donor!';
         exit( json_encode( $return ) );
     }
 
@@ -191,12 +195,12 @@ class AjaxManager
         if ( $is_donor_result === false || $blood_group_result === false ) {
             $return['success'] = 2;
             $return['message'] = "Nothing changed $is_donor_result $blood_group_result $donor_to_cancel";
-            ;
             exit( json_encode( $return ) );
         }
 
         $return['success'] = 1;
         $return['message'] = 'Removed donor successfuly!';
+        $return['id'] = $donor_to_cancel;
         exit( json_encode( $return ) );
     }
 
@@ -250,6 +254,44 @@ class AjaxManager
         $return['success'] = 1;
         $return['message'] = 'Donor update successfuly!';
         exit( json_encode( $return ) );
+    }
+
+    public static function bd_get_donor() {
+
+        $current_user = wp_get_current_user();
+        if ( !$current_user->exists() ) {
+            $return['success'] = 3;
+            $return['message'] = 'Redirect login';
+            exit( json_encode( $return ) );
+        } 
+
+		$donor_id = sanitize_text_field($_POST['id']);
+        
+        $user = get_userdata( $donor_id );
+
+        if ( $user === false ) {
+            $return['success'] = 2;
+            $return['message'] = 'An error occured when getting donor!';
+            exit( json_encode($return) );
+        }
+
+        if ( !$user->get( 'is_donor' ) ) {
+            $return['success'] = 2;
+            $return['message'] = 'The user is not a donor!';
+            exit( json_encode($return) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'Got donor!';
+
+        $return['first_name'] = $user->get( 'first_name' );
+        $return['last_name'] = $user->get( 'last_name' );
+        $return['email'] = $user->get( 'user_email' );
+        $return['phone_number'] = $user->get( 'phone_number' );
+        $return['blood_group'] = $user->get( 'blood_group' );
+        $return['address'] = $user->get( 'address' );
+
+        exit( json_encode($return) );
     }
 
     public static function bd_add_tba_donation() {

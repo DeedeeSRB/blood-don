@@ -18,8 +18,9 @@
 			<div class="row my-3">
 				<div class="col"><h3>Current Donors</h3></div>
 				<div class="col-auto">
-					<button type="button" class="col-auto btn btn-success px-2 mx-3" data-bs-toggle="modal" data-bs-target="#createDonorModal">Add new donor</button>
-					<button type="button" class="col-auto btn btn-warning px-2" data-bs-toggle="modal" data-bs-target="#customEditDonorModal">Edit donor</button>
+					<button type="button" class="col-auto btn btn-success px-2 mx-3" data-bs-toggle="modal" data-bs-target="#addDonorModal">Add new donor</button>
+					<button type="button" class="col-auto btn btn-warning px-2" data-bs-toggle="modal" data-preset=false 
+					data-bs-target="#editDonorModal" onclick="bd_set_edit_donor_form(this)">Edit donor</button>
 				</div>
 			</div>
 			<!-------------------------------------- DONORS TABLE -------------------------------------->

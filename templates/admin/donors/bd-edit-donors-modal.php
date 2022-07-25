@@ -8,23 +8,21 @@
 			<div class="modal-body">
 				<form name="bd_edit_donor_form" id="bd_edit_donor_form" onsubmit="return false">
 					<div id="bd_edit_donor_id_sec">
-						<label class="form-label fs-5 w-100" for="bd_edit_donor_id">donor: </label>
+						<label class="form-label fs-5 w-100" for="bd_edit_donor_id">Donor</label>
 						<select id="bd_edit_donor_id" name="bd_edit_donor_id" class="form-select" style="width: 100%;">
 							<option value="" selected disabled></option>
 							<?php
-							global $wpdb;
-
-							// $tablename_donors = $wpdb->prefix . 'donors'; 
-							// $query = "
-							// SELECT * 
-							// FROM $tablename_donors;";
-				
-							// $donors = $wpdb->get_results( $query );
-							// foreach($donors as $donor){
-								?>
-									
-								<?php
-							//}
+                            $users = get_users( array( 'fields' => array( 'ID' ) ) );
+							foreach($users as $user){
+								$is_donor = get_user_meta( $user->id, 'is_donor', true );
+								if ( $is_donor != false ) {
+									$first_name = get_user_meta( $user->id, 'first_name', true );
+									$last_name = get_user_meta( $user->id, 'last_name', true );
+									?>
+										<option value="<?php echo $user->id ?>"><?php echo $first_name ?> <?php echo $last_name ?> (ID:<?php echo $user->id ?>)</option>
+									<?php
+								}
+							}
 							?>
 						</select>
 					</div>

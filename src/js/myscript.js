@@ -72,23 +72,32 @@ function submit_bd_register_callback(data)
 
 //// BECOME A DONOR ////
 function submit_bd_be_donor(button) {
-	if ( !document.forms['bd_be_donor_form'].reportValidity() ) return;
+	if ( $("#bd_be_donor_form").length ) if ( !document.forms['bd_be_donor_form'].reportValidity() ) return;
+	if ( $("#bd_create_donor_form").length ) if ( !document.forms['bd_create_donor_form'].reportValidity() ) return;
+	
 
 	var fd = new FormData();
 
 	nonce = $(button).attr("data-nonce");
-	
+	id = -1;
+
+	if ( $("#bd_create_donor_user_id").length ) id = $("#bd_create_donor_user_id").val();
+
 	fd.append('nonce', 			nonce);
 	fd.append('action', 		"bd_be_donor");
+	fd.append('id', 			id);
 	fd.append('blood_group',	$("#bd_be_donor_bg").val());
 
-	js_submit(fd, submit_bd_be_donor_callback, "", "#bd_be_donor_alert_box");
+	js_submit(fd, submit_bd_be_donor_callback, "#bd_admin_donor_success_div", "#bd_admin_donor_danger_div");
 }
 
 function submit_bd_be_donor_callback(data) {
 	var jdata = JSON.parse(data);
 	var success = jdata.success;
-	if (success == 1 ) location.reload();
+	var mess = jdata.message;
+	if ( success == 1 && $("#bd_donors_table").length ) $("#bd_donors_table").load(location.href + " #bd_donors_table");
+	else if ( success == 1 ) location.reload();
+	else if ( success == 2 ) alert(mess);
 }
 
 //// STOP BEING A DONOR ////
@@ -108,8 +117,10 @@ function submit_bd_cancel_donor_callback(data) {
 	var jdata = JSON.parse(data);
 	var success = jdata.success;
 	var mess = jdata.message;
-	if (success == 1 && !$("#bd_donors_table").length) location.reload();
-	if (success == 2 ) alert(mess);
+	var id = jdata.id;
+	if ( success == 1 && $("#bd_donors_table").length ) $("#bd_remove_donor_"+id).remove();
+	else if ( success == 1 ) location.reload();
+	else if ( success == 2 ) alert(mess);
 }
 
 //// CREATE TBA DONATION ////
@@ -132,7 +143,7 @@ function submit_bd_tba_donation_submit_form(button) {
 function submit_bd_add_tba_donation_callback(data) {
 	var jdata = JSON.parse(data);
 	var success = jdata.success;
-	if (success == 1 ) $("#bd_tba_donations_table").load(location.href + " #bd_tba_donations_table");
+	if ( success == 1 ) $("#bd_tba_donations_table").load(location.href + " #bd_tba_donations_table");
 }
 
 //// DELETE DONATION ////
@@ -294,7 +305,7 @@ function submit_bd_create_donation_callback(data) {
 }
 
 
-//// Get Donation ////
+//// GET DONATION ////
 function get_donation(id) {
 	var fd = new FormData();
 
@@ -395,6 +406,39 @@ function submit_bd_edit_donor_callback(data) {
 	if (success == 1) $("#bd_donors_table").load(location.href + " #bd_donors_table");
 }
 
+//// GET DONOR ////
+function get_donor(id) {
+	var fd = new FormData();
+
+	fd.append('action', "bd_get_donor");
+	fd.append('id',		id);
+
+	js_submit(fd, get_donor_callback, "", "");
+}
+
+function get_donor_callback(data) {
+
+	var jdata = JSON.parse(data);
+
+	var success = jdata.success;
+
+	var first_name = jdata.first_name;
+	var last_name = jdata.last_name;
+	var email = jdata.email;
+	var phone_number = jdata.phone_number;
+	var blood_group = jdata.blood_group;
+	var address = jdata.address;
+	
+	if (success == 1) {
+		$("#bd_edit_donor_first_name").val(first_name);
+		$("#bd_edit_donor_last_name").val(last_name);
+		$("#bd_edit_donor_email").val(email);
+		$("#bd_edit_donor_phone_number").val(phone_number);
+		$("#bd_edit_donor_blood_group").val(blood_group);
+		$("#bd_edit_donor_address").val(address); 
+	}
+}
+
 function js_submit(data, callback, suc_div, alert_div)
 {
 	$.ajax({
@@ -421,6 +465,7 @@ function submit_callback(data, suc_div, alert_div) {
 	}
 
 	if ( success == 2) {
+		//alert(mess);
 		$(alert_div).show();
 		$(alert_div).html('<div class="fs-6">' + mess + '</div>');
 		$(alert_div).delay(2500).fadeOut(500, function() { $(this).hide(); });
@@ -445,9 +490,22 @@ window.addEventListener("load", function() {
 		dropdownParent: $('#createDonationModal'),
 	});
 
+	$('#bd_edit_donor_id').select2({
+		dropdownParent: $('#editDonorModal'),
+	});
+
+	$('#bd_create_donor_user_id').select2({
+		dropdownParent: $('#addDonorModal'),
+	});
+
 	$('#bd_edit_donation_id').on('select2:select', function (e) {
 		var donationToGet = e.params.data.id;
 		get_donation(donationToGet);
+	});
+
+	$('#bd_edit_donor_id').on('select2:select', function (e) {
+		var donorToGet = e.params.data.id;
+		get_donor(donorToGet);
 	});
 
 });
