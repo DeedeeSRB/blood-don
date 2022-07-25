@@ -8,7 +8,7 @@
 			<div class="modal-body">
 				<form name="bd_edit_donation_form" id="bd_edit_donation_form" onsubmit="return false">
 					<div id="bd_edit_donation_id_sec">
-						<label class="form-label fs-5 w-100" for="bd_edit_donation_id">Donation: </label>
+						<label class="form-label fs-5 w-100" for="bd_edit_donation_id">Donation</label>
 						<select id="bd_edit_donation_id" name="bd_edit_donation_id" class="form-select" style="width: 100%;">
 							<option value="" selected disabled></option>
 							<?php
@@ -29,18 +29,18 @@
 						</select>
 					</div>
 					<div class="my-3" id="bd_edit_donation_donor_id_sec">
-						<label class="form-label fs-5 w-100" for="bd_edit_donation_donor_id">Donor: </label>
+						<label class="form-label fs-5 w-100" for="bd_edit_donation_donor_id">Donor</label>
 						<select id="bd_edit_donation_donor_id" name="bd_edit_donation_donor_id" class="form-select" style="width: 100%;" required>
 							<option value="" selected disabled></option>
 							<?php
 							$users = get_users( array( 'fields' => array( 'ID' ) ) );
 							foreach($users as $user){
-								$is_donor = get_user_meta( $user->id, 'is_donor' )[0];
+								$is_donor = get_user_meta( $user->id, 'is_donor', true );
 								if ( $is_donor != false ) {
-									$first_name = get_user_meta( $user->id, 'first_name' );
-									$last_name = get_user_meta( $user->id, 'last_name' );
+									$first_name = get_user_meta( $user->id, 'first_name', true );
+									$last_name = get_user_meta( $user->id, 'last_name', true );
 									?>
-										<option value="<?php echo $user->id ?>"><?php echo $first_name[0] ?> <?php echo $last_name[0] ?> (ID:<?php echo $user->id ?>)</option>
+										<option value="<?php echo $user->id ?>"><?php echo $first_name ?> <?php echo $last_name ?> (ID:<?php echo $user->id ?>)</option>
 									<?php
 								}
 							}
@@ -48,15 +48,15 @@
 						</select>
 					</div>
 					<div>
-						<label class="form-label fs-5" for="bd_edit_donation_amount_ml">Amount (mL): </label>
+						<label class="form-label fs-5" for="bd_edit_donation_amount_ml">Amount (mL)</label>
 						<input type="number" class="form-control" id="bd_edit_donation_amount_ml" name="bd_edit_donation_amount_ml" placeholder="200 ml" maxlength="45" required>
 					</div>
 					<div class="my-3">
-						<label class="form-label fs-5" for="bd_edit_donation_time">Time: </label>
+						<label class="form-label fs-5" for="bd_edit_donation_time">Time</label>
 						<input type="datetime-local" class="form-control" id="bd_edit_donation_time" name="bd_edit_donation_time" required>
 					</div>
 					<div>
-						<label class="form-label fs-5" for="bd_edit_donation_status">Status: </label>
+						<label class="form-label fs-5" for="bd_edit_donation_status">Status</label>
 						<select id="bd_edit_donation_status" name="bd_edit_donation_status" class="form-control" required>
 							<option value="" selected disabled>Select</option>
 							<option value="Completed">Completed</option>

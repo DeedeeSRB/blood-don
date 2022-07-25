@@ -173,7 +173,7 @@ else {
     <?php 
         $nonce = wp_create_nonce("bd_cancel_donor_nonce");
         $id = $current_user->ID;
-        echo '<a class="fs-6" data-nonce="' . $nonce . '" value="' . $id . '" href="#" onclick="bd_cancel_donor(this)">Stop being a donor?</a>';
+        echo '<button type="button" class="btn btn-link" data-nonce="' . $nonce . '" value="' . $id . '" onclick="bd_cancel_donor(this)">Stop being a donor?</button>';
     ?>
 </div>
 

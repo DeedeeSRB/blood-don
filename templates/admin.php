@@ -13,7 +13,8 @@
 	<div class="tab-content" id="nav-tabContent">
 		<div class="tab-pane fade show active" id="nav-donors" role="tabpanel" aria-labelledby="nav-donors-tab" tabindex="0">
 			<?php $nonce_del_donor = wp_create_nonce("bd_delete_donor_nonce"); ?>
-			<div name="bd_admin_donor_response_div" id="bd_admin_donor_response_div" class="alert alert-danger alert-dismissible collapse"></div>
+			<div name="bd_admin_donor_danger_div" id="bd_admin_donor_danger_div" class="alert alert-danger alert-dismissible collapse"></div>
+			<div name="bd_admin_donor_success_div" id="bd_admin_donor_success_div" class="alert alert-success alert-dismissible collapse"></div>
 			<div class="row my-3">
 				<div class="col"><h3>Current Donors</h3></div>
 				<div class="col-auto">

@@ -17,6 +17,8 @@ class AjaxManager
 
         add_action("wp_ajax_bd_be_donor", array( 'Inc\Base\AjaxManager' , 'bd_be_donor' ) );
         add_action("wp_ajax_bd_cancel_donor", array( 'Inc\Base\AjaxManager' , 'bd_cancel_donor' ) );
+
+        add_action("wp_ajax_bd_edit_donor", array( 'Inc\Base\AjaxManager' , 'bd_edit_donor' ) );
         
         add_action("wp_ajax_bd_add_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_add_tba_donation' ) );
         add_action("wp_ajax_bd_delete_donation", array( 'Inc\Base\AjaxManager' , 'bd_delete_donation' ) );
@@ -29,6 +31,7 @@ class AjaxManager
         $please_login = array( 'Inc\Base\AjaxManager' , 'please_login' );
         add_action("wp_ajax_nopriv_bd_be_donor", $please_login );
         add_action("wp_ajax_nopriv_bd_cancel_donor", $please_login );
+        add_action("wp_ajax_nopriv_bd_edit_donor", $please_login );
         add_action("wp_ajax_nopriv_bd_add_tba_donation", $please_login );
         add_action("wp_ajax_nopriv_bd_delete_donation", $please_login );
         add_action("wp_ajax_nopriv_bd_approve_tba_donation", $please_login );
@@ -82,7 +85,7 @@ class AjaxManager
                 'is_donor'          => 0, 
                 'phone_number'      => $phone_number, 
                 'address'           => $address,
-                'blood_group'           => '',
+                'blood_group'       => '',
             ),
         );
 
@@ -187,12 +190,65 @@ class AjaxManager
 
         if ( $is_donor_result === false || $blood_group_result === false ) {
             $return['success'] = 2;
-            $return['message'] = 'Nothing changed';
+            $return['message'] = "Nothing changed $is_donor_result $blood_group_result $donor_to_cancel";
+            ;
             exit( json_encode( $return ) );
         }
 
         $return['success'] = 1;
-        $return['message'] = 'You are no longer a donor!';
+        $return['message'] = 'Removed donor successfuly!';
+        exit( json_encode( $return ) );
+    }
+
+    public static function bd_edit_donor() {
+        if ( AjaxManager::security_check( "bd_edit_donor_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_edit_donor_nonce") ) );
+
+        $id_to_edit = sanitize_text_field($_POST['id']);
+        $first_name = sanitize_text_field($_POST['first_name']);
+		$last_name = sanitize_text_field($_POST['last_name']);
+        $email = sanitize_email($_POST['email']);
+		$phone_number = sanitize_text_field($_POST['phone_number']);
+        $blood_group = sanitize_text_field($_POST['blood_group']);
+		$address = sanitize_textarea_field($_POST['address']);
+		
+        $user = get_userdata( $id_to_edit );
+        if ( $user === false ) {
+            $return['success'] = 2;
+            $return['message'] = "Couldn't find donor with id $id_to_edit!";
+            exit( json_encode( $return ) );
+        } 
+
+        $is_donor = get_user_meta( $id_to_edit, 'is_donor', true );
+        if ( $is_donor === false ) {
+            $return['success'] = 2;
+            $return['message'] = "This user is not a donor!";
+            exit( json_encode( $return ) );
+        } 
+
+        $userdata = array(   
+            'ID'                    => $id_to_edit,
+            'user_email'            => $email,   
+            'first_name'            => $first_name,   
+            'last_name'             => $last_name,   
+            'meta_input'            => array(
+                'phone_number'      => $phone_number, 
+                'address'           => $address,
+                'blood_group'       => $blood_group,
+            ),
+        );
+
+        $user_id = wp_update_user( $userdata ) ;
+ 
+        if ( is_wp_error( $user_id ) ) {
+            $return['success'] = 2;
+            $return['message'] = "An error occured when updating donor with ID $id_to_edit
+            $first_name $last_name $email 
+            $phone_number $blood_group $address!";
+            exit( json_encode( $return ) );
+        }
+
+        $return['success'] = 1;
+        $return['message'] = 'Donor update successfuly!';
         exit( json_encode( $return ) );
     }
 

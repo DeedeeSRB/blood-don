@@ -60,7 +60,7 @@ class DonorProfile
 				</th>
 				<td>
 					<textarea class="regular-text ltr" name="bd_donor_usermeta_address" 
-						id="bd_donor_usermeta_address" value="<?= esc_attr( get_user_meta( $user->ID, 'address', true ) ) ?>"></textarea>
+						id="bd_donor_usermeta_address"><?= esc_attr( get_user_meta( $user->ID, 'address', true ) ) ?></textarea>
 					<p class="description">
 						Please enter an address.
 					</p>
@@ -75,9 +75,10 @@ class DonorProfile
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
 		}
-	
-		return update_user_meta( $user_id, 'blood_group', $_POST['bd_donor_usermeta_blood_group'] )
-		 	&& update_user_meta( $user_id, 'phone_number', $_POST['bd_donor_usermeta_phone_number'] ) 
-		 	&& update_user_meta( $user_id, 'address', $_POST['bd_donor_usermeta_address'] );
+
+		$result1 = update_user_meta( $user_id, 'blood_group', $_POST['bd_donor_usermeta_blood_group'] );
+		$result2 = update_user_meta( $user_id, 'phone_number', $_POST['bd_donor_usermeta_phone_number'] );
+		$result3 = update_user_meta( $user_id, 'address', $_POST['bd_donor_usermeta_address'] );
+		return $result1 && $result2 && $result3 ;
 	}
 }
