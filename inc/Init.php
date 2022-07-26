@@ -14,6 +14,7 @@ final class Init
 	{
 		return [
 			Pages\Admin::class,
+			Base\DatabaseCreator::class,
 			Base\Enqueue::class,
             Base\SettingsLink::class,
 			Base\CustomShortcode::class,

@@ -6,6 +6,10 @@ namespace Inc\Base;
 
 class DatabaseCreator
 {
+	public static function register() {
+		DatabaseCreator::createTables();
+	}
+
 	public static function createTables()
 	{
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
