@@ -36,9 +36,12 @@ define( 'BD_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'BD_PLUGIN_NAME', plugin_basename( __FILE__ ));
 
+add_option( 'donations_db_version', 2 );
+//update_option( 'donations_db_version', 1 );
 if ( class_exists( 'Inc\\Init' ) ) {
 	Inc\Init::register_services();
 }
 
 register_activation_hook( __FILE__, array( 'Inc\Base\Activate', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'Inc\Base\Deactivate', 'deactivate' ) );
+
