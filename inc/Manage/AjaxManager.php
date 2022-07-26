@@ -2,34 +2,34 @@
 /**
  * @package  BloodDonPlugin
  */
-namespace Inc\Base;
+namespace Inc\Manage;
 use PasswordHash;
 
 class AjaxManager
 {
-	public static function register() 
+	public function register() 
 	{
-        add_action("wp_ajax_bd_register", array( 'Inc\Base\AjaxManager' , 'bd_register' ) );
-        add_action("wp_ajax_nopriv_bd_register", array( 'Inc\Base\AjaxManager' , 'bd_register' ) );
+        add_action("wp_ajax_bd_register", array( $this , 'bd_register' ) );
+        add_action("wp_ajax_nopriv_bd_register", array( $this , 'bd_register' ) );
         
-        add_action("wp_ajax_bd_login", array( 'Inc\Base\AjaxManager' , 'bd_login' ) );
-        add_action("wp_ajax_nopriv_bd_login", array( 'Inc\Base\AjaxManager' , 'bd_login' ) );
+        add_action("wp_ajax_bd_login", array( $this , 'bd_login' ) );
+        add_action("wp_ajax_nopriv_bd_login", array( $this , 'bd_login' ) );
 
-        add_action("wp_ajax_bd_be_donor", array( 'Inc\Base\AjaxManager' , 'bd_be_donor' ) );
-        add_action("wp_ajax_bd_cancel_donor", array( 'Inc\Base\AjaxManager' , 'bd_cancel_donor' ) );
+        add_action("wp_ajax_bd_be_donor", array( $this , 'bd_be_donor' ) );
+        add_action("wp_ajax_bd_cancel_donor", array( $this , 'bd_cancel_donor' ) );
 
-        add_action("wp_ajax_bd_edit_donor", array( 'Inc\Base\AjaxManager' , 'bd_edit_donor' ) );
-        add_action("wp_ajax_bd_get_donor", array( 'Inc\Base\AjaxManager' , 'bd_get_donor' ) );
+        add_action("wp_ajax_bd_edit_donor", array( $this , 'bd_edit_donor' ) );
+        add_action("wp_ajax_bd_get_donor", array( $this , 'bd_get_donor' ) );
         
-        add_action("wp_ajax_bd_add_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_add_tba_donation' ) );
-        add_action("wp_ajax_bd_delete_donation", array( 'Inc\Base\AjaxManager' , 'bd_delete_donation' ) );
-        add_action("wp_ajax_bd_approve_tba_donation", array( 'Inc\Base\AjaxManager' , 'bd_approve_tba_donation' ) );
+        add_action("wp_ajax_bd_add_tba_donation", array( $this , 'bd_add_tba_donation' ) );
+        add_action("wp_ajax_bd_delete_donation", array( $this , 'bd_delete_donation' ) );
+        add_action("wp_ajax_bd_approve_tba_donation", array( $this , 'bd_approve_tba_donation' ) );
         
-        add_action("wp_ajax_bd_create_donation", array( 'Inc\Base\AjaxManager' , 'bd_create_donation' ) );
-        add_action("wp_ajax_bd_edit_donation", array( 'Inc\Base\AjaxManager' , 'bd_edit_donation' ) );
-        add_action("wp_ajax_bd_get_donation", array( 'Inc\Base\AjaxManager' , 'bd_get_donation' ) );
+        add_action("wp_ajax_bd_create_donation", array( $this , 'bd_create_donation' ) );
+        add_action("wp_ajax_bd_edit_donation", array( $this , 'bd_edit_donation' ) );
+        add_action("wp_ajax_bd_get_donation", array( $this , 'bd_get_donation' ) );
 
-        $please_login = array( 'Inc\Base\AjaxManager' , 'please_login' );
+        $please_login = array( $this , 'please_login' );
         add_action("wp_ajax_nopriv_bd_be_donor", $please_login );
         add_action("wp_ajax_nopriv_bd_cancel_donor", $please_login );
         add_action("wp_ajax_nopriv_bd_edit_donor", $please_login );
@@ -42,7 +42,7 @@ class AjaxManager
         add_action("wp_ajax_nopriv_bd_get_donation", $please_login );
 	}
 
-    public static function bd_register() {
+    public function bd_register() {
         
         // wp_delete_user( 2 );
         // $return['success'] = 2;
@@ -109,7 +109,7 @@ class AjaxManager
         exit( json_encode( $return ) );
     }
 
-    public static function bd_login() {
+    public function bd_login() {
 
         if ( !wp_verify_nonce( $_POST['nonce'], "bd_login_form_nonce") ) {
             $return['success'] = 2;
@@ -153,7 +153,7 @@ class AjaxManager
 
     }
 
-    public static function bd_be_donor() {
+    public function bd_be_donor() {
 
         if ( AjaxManager::security_check( "bd_be_donor_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_be_donor_nonce") ) );
 
@@ -183,7 +183,7 @@ class AjaxManager
         exit( json_encode( $return ) );
     }
 
-    public static function bd_cancel_donor() {
+    public function bd_cancel_donor() {
 
         if ( AjaxManager::security_check( "bd_cancel_donor_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_cancel_donor_nonce") ) );
 
@@ -204,7 +204,7 @@ class AjaxManager
         exit( json_encode( $return ) );
     }
 
-    public static function bd_edit_donor() {
+    public function bd_edit_donor() {
         if ( AjaxManager::security_check( "bd_edit_donor_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_edit_donor_nonce") ) );
 
         $id_to_edit = sanitize_text_field($_POST['id']);
@@ -256,7 +256,7 @@ class AjaxManager
         exit( json_encode( $return ) );
     }
 
-    public static function bd_get_donor() {
+    public function bd_get_donor() {
 
         $current_user = wp_get_current_user();
         if ( !$current_user->exists() ) {
@@ -294,7 +294,7 @@ class AjaxManager
         exit( json_encode($return) );
     }
 
-    public static function bd_add_tba_donation() {
+    public function bd_add_tba_donation() {
 
         if ( AjaxManager::security_check( "bd_tba_donation_submit_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_tba_donation_submit_nonce") ) );
 
@@ -339,7 +339,7 @@ class AjaxManager
         exit( json_encode( $return ) );
     }
 
-    public static function bd_delete_donation() {
+    public function bd_delete_donation() {
 
         if ( AjaxManager::security_check( "bd_delete_donation_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_delete_donation_nonce") ) );
      
@@ -368,7 +368,7 @@ class AjaxManager
 		exit( json_encode( $return ) );
     }
 
-    public static function bd_approve_tba_donation() {
+    public function bd_approve_tba_donation() {
 
         if ( AjaxManager::security_check( "bd_approve_tba_donation_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_approve_tba_donation_nonce") ) );
         
@@ -396,7 +396,7 @@ class AjaxManager
 		exit( json_encode( $return ) );
     }
 
-    public static function bd_edit_donation() {
+    public function bd_edit_donation() {
         
         if ( AjaxManager::security_check( "bd_edit_donation_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_edit_donation_nonce") ) );
 
@@ -496,7 +496,7 @@ class AjaxManager
         exit( json_encode($return) );
     }
 
-    public static function bd_create_donation() {
+    public function bd_create_donation() {
 
         if ( AjaxManager::security_check( "bd_create_donation_nonce")['success']  != 1 ) exit( json_encode( AjaxManager::security_check( "bd_create_donation_nonce") ) );
 
@@ -571,7 +571,7 @@ class AjaxManager
         
     }
 
-    public static function bd_get_donation() {
+    public function bd_get_donation() {
 
         $current_user = wp_get_current_user();
         if ( !$current_user->exists() ) {
@@ -605,7 +605,7 @@ class AjaxManager
         exit( json_encode($return) );
     }
 
-    public static function please_login() {
+    public function please_login() {
         $return = [];
         $return['success'] = 3;
         $return['message'] = 'Redirect';
@@ -613,7 +613,7 @@ class AjaxManager
         exit( json_encode( $return ) );
     }
 
-    public static function security_check( $nonce ) {
+    public function security_check( $nonce ) {
 
         $return['success'] = 1;
 

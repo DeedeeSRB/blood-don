@@ -2,12 +2,12 @@
 /**
  * @package  BloodDonPlugin
  */
-namespace Inc\Base;
+namespace Inc\Manage;
 
-class DatabaseCreator
+class DatabaseManager
 {
 	public static function register() {
-		DatabaseCreator::createTables();
+		DatabaseManager::createTables();
 	}
 
 	public static function createTables()

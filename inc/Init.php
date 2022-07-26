@@ -14,11 +14,11 @@ final class Init
 	{
 		return [
 			Pages\Admin::class,
-			Base\DatabaseCreator::class,
+			Manage\DatabaseManager::class,
 			Base\Enqueue::class,
             Base\SettingsLink::class,
-			Base\CustomShortcode::class,
-			Base\AjaxManager::class,
+			Manage\ShortcodeManager::class,
+			Manage\AjaxManager::class,
 			Base\DonorProfile::class,
 		];
 	}
