@@ -22,9 +22,9 @@ class Admin
 		$this->setPages();
 		//$this->setSubpages();
 
-		$this->setSettings();
-		$this->setSections();
-		$this->setFields();
+		//$this->setSettings();
+		//$this->setSections();
+		//$this->setFields();
 
 		//$this->settings->addPages( $this->pages )->withSubPage( 'Dashboard' )->addSubPages( $this->subpages )->register();
 		$this->settings->addPages( $this->pages )->register();
