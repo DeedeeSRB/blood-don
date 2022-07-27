@@ -62,5 +62,8 @@
 			
 		</div>
 	
+		<!-------------------------------------- DELETE MODAL -------------------------------------->
+		<?php include BD_PLUGIN_PATH . 'templates\bd-confirm-delete.php'; ?>
+
 	</div>
 </div>

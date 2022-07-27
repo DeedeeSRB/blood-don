@@ -122,7 +122,9 @@ else {
                             <?php 
                                 $nonce_del = wp_create_nonce("bd_delete_donation_nonce");
                                 $id = $data->id;
-                                echo '<button class="btn btn-danger" data-nonce="' . $nonce_del . '" name="bd_delete_donation" id="bd_delete_donation" value="' . $id . '" onclick="bd_delete_donation_submit(this)">X</button>';
+                                echo '<button class="btn btn-danger" data-nonce="' . $nonce_del . '" name="bd_delete_donation" 
+                                id="bd_delete_donation" value="' . $id . '" data-fn="2"
+                                onclick="bd_delete_confirm(this)" data-bs-toggle="modal" data-bs-target="#bdCancelModal">X</button>';
                             ?>
                         </div>
                     </li>
@@ -130,6 +132,8 @@ else {
                 }
             ?>
         </ul>
+        <!-------------------------------------- DELETE MODAL -------------------------------------->
+		<?php include BD_PLUGIN_PATH . 'templates\bd-confirm-delete.php'; ?>
     </div>
     <div class="fs-3">Your Donations</div>
     <div class="my-5">

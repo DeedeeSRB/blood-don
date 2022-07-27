@@ -439,6 +439,18 @@ function get_donor_callback(data) {
 	}
 }
 
+function bd_delete_confirm(button) {
+	$("#bd_delete_confirm").val(button.value);
+	$("#bd_delete_confirm").attr("data-nonce", button.getAttribute("data-nonce"));
+	if (button.getAttribute("data-fn") == 1) $("#bd_delete_confirm").attr("data-fn", "1");
+	else if (button.getAttribute("data-fn") == 2) $("#bd_delete_confirm").attr("data-fn", "2");
+}
+
+function bd_delete_submit(button) {
+	if ( button.getAttribute("data-fn") == 1 ) bd_cancel_donor(button);
+	else if ( button.getAttribute("data-fn") == 2 ) bd_delete_donation_submit(button);
+}
+
 function js_submit(data, callback, suc_div, alert_div)
 {
 	$.ajax({

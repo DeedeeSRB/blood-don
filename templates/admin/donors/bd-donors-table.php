@@ -44,7 +44,8 @@
                                 <div class="col-auto">
                                     <?php 
                                         $nonce = wp_create_nonce( 'bd_cancel_donor_nonce' );
-                                        echo '<button class="btn btn-danger" data-nonce="' . $nonce . '" name="bd_delete_donor" id="bd_delete_donor" value="' . $user->id . '" onclick="bd_cancel_donor(this)">X</button>';
+                                        echo '<button class="btn btn-danger" data-nonce="' . $nonce . '" name="bd_delete_donor" id="bd_delete_donor" data-fn="1"
+                                        value="' . $user->id . '" onclick="bd_delete_confirm(this)" data-bs-toggle="modal" data-bs-target="#bdCancelModal">X</button>';
                                     ?>
                                 </div>
                             </div>
